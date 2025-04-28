@@ -1,289 +1,289 @@
 age_group,gender,race_ethnicity,education_level,marital_status,employment_status,housing_status,has_dependents,prior_convictions,juvenile_convictions,prior_violent_offenses,prior_probation_violation,prior_incarceration,mental_health_issues,substance_abuse_history,gang_affiliation,aggression_history,compliance_history,motivation_to_change,stable_employment_past,stable_residence_past,positive_social_support,recidivism
-25-34,Male,Turk,Primary School,Married,Unemployed,Homeless,False,1,1,0,True,False,False,True,False,False,False,True,False,True,True,1
-55-64,Male,Turk,Illiterate,Single,Unemployed,Rent,False,1,1,1,False,False,False,True,False,True,True,True,False,True,False,1
-35-44,Male,Turk,Primary School,Single,Employed,Houseowner,True,2,0,0,True,False,False,False,True,True,False,True,True,True,False,0
-35-44,Male,Turk,Middle School,Single,Employed,Houseowner,False,0,0,0,False,True,False,False,False,False,False,True,False,False,True,1
-25-34,Male,Turk,Primary School,Single,Employed,Houseowner,False,3,0,2,True,False,False,True,False,True,False,True,True,False,False,1
-25-34,Female,Turk,High School,Married,Employed,Rent,True,1,0,1,True,True,True,False,False,False,False,True,True,False,True,0
-18-24,Male,Turk,High School,Married,Unemployed,Rent,False,2,1,0,False,False,False,False,False,False,False,False,True,True,True,0
+25-34,Male,Turk,Primary School,Married,Unemployed,Homeless,False,1,1,0,True,False,False,False,False,False,False,True,False,True,True,1
+55-64,Male,Turk,Illiterate,Single,Unemployed,Rent,False,1,1,1,False,False,False,False,False,True,True,True,False,True,False,1
+35-44,Male,Turk,Primary School,Single,Employed,Houseowner,True,2,0,0,True,False,False,False,False,True,False,True,True,True,False,0
+35-44,Male,Turk,Middle School,Single,Employed,Houseowner,False,0,0,0,False,True,False,False,False,False,False,True,False,False,True,0
+25-34,Male,Turk,Primary School,Single,Employed,Houseowner,False,3,0,2,True,False,False,False,False,True,False,True,True,False,False,1
+25-34,Female,Turk,High School,Married,Employed,Rent,True,1,0,1,True,True,False,False,False,False,False,True,True,False,True,0
+18-24,Male,Turk,High School,Married,Unemployed,Rent,False,2,1,0,False,False,False,False,False,False,False,False,True,True,True,1
 45-54,Male,Turk,Primary School,Single,Unemployed,Houseowner,False,0,1,1,False,True,False,False,False,False,False,True,False,False,True,1
 35-44,Male,Turk,Primary School,Single,Unemployed,Houseowner,True,0,0,0,False,True,False,False,False,False,False,True,False,True,True,0
-35-44,Male,Turk,Primary School,Divorced,Student,Houseowner,False,1,0,0,False,True,False,False,False,False,False,True,False,True,True,0
+35-44,Male,Turk,Primary School,Divorced,Student,Houseowner,False,1,0,0,False,True,False,False,False,False,False,True,False,True,True,1
 18-24,Male,Turk,Middle School,Single,Student,Rent,True,0,0,2,False,True,False,False,False,True,False,True,False,False,True,1
 55-64,Male,Kurd,Primary School,Single,Student,Rent,True,2,0,1,False,True,False,False,False,False,False,True,False,True,False,1
-45-54,Male,Turk,Middle School,Single,Retired,Houseowner,True,1,0,0,False,True,True,False,False,False,False,False,False,True,True,0
-25-34,Female,Turk,Primary School,Married,Employed,Houseowner,False,3,0,0,False,False,False,True,False,False,False,True,False,True,True,1
+45-54,Male,Turk,Middle School,Single,Retired,Houseowner,True,1,0,0,False,True,False,False,False,False,False,False,False,True,True,0
+25-34,Female,Turk,Primary School,Married,Employed,Houseowner,False,3,0,0,False,False,False,False,False,False,False,True,False,True,True,1
 25-34,Male,Kurd,Middle School,Married,Employed,Houseowner,False,4,0,0,False,False,False,False,False,True,False,True,False,True,True,1
-25-34,Male,Arab,Primary School,Single,Employed,Homeless,True,1,0,0,False,True,True,True,False,False,False,True,True,False,True,1
-25-34,Male,Turk,Primary School,Single,Unemployed,Houseowner,True,1,2,1,True,False,False,True,False,False,False,True,True,True,False,1
+25-34,Male,Arab,Primary School,Single,Employed,Homeless,True,1,0,0,False,True,True,False,False,False,False,True,True,False,True,1
+25-34,Male,Turk,Primary School,Single,Unemployed,Houseowner,True,1,2,1,True,False,False,False,False,False,False,True,True,True,False,1
 35-44,Male,Turk,High School,Married,Retired,Rent,False,3,2,0,False,True,False,True,False,False,False,True,True,False,True,0
 25-34,Male,Kurd,High School,Married,Employed,Rent,True,1,0,0,True,False,False,True,False,False,False,True,True,True,False,1
-25-34,Male,Turk,Primary School,Single,Retired,Houseowner,False,1,0,0,False,True,False,False,False,True,False,True,True,True,True,0
-35-44,Male,Turk,High School,Divorced,Employed,Houseowner,False,0,2,1,True,True,False,True,False,False,False,True,True,True,False,1
+25-34,Male,Turk,Primary School,Single,Retired,Houseowner,False,1,0,0,False,True,False,False,False,True,False,True,True,True,True,1
+35-44,Male,Turk,High School,Divorced,Employed,Houseowner,False,0,2,1,True,True,False,False,False,False,False,True,True,True,False,1
 25-34,Male,Turk,Middle School,Single,Retired,Houseowner,False,1,0,0,False,False,False,False,False,False,False,True,False,True,True,0
-25-34,Male,Turk,High School,Single,Employed,Rent,False,2,0,1,False,False,False,False,False,False,False,False,True,True,True,0
+25-34,Male,Turk,High School,Single,Employed,Rent,False,2,0,1,False,False,False,False,False,False,False,False,True,True,True,1
 25-34,Male,Turk,High School,Divorced,Employed,Rent,True,1,0,0,True,False,False,False,False,False,False,True,True,False,False,1
-25-34,Female,Turk,Primary School,Single,Unemployed,Rent,False,2,0,0,True,False,False,True,False,True,False,False,True,False,True,1
-35-44,Male,Turk,Illiterate,Married,Employed,Rent,False,3,1,0,True,False,True,False,False,False,False,False,False,False,False,1
-25-34,Male,Turk,Primary School,Single,Employed,Houseowner,False,2,2,2,False,True,True,False,True,False,False,True,True,False,False,1
-35-44,Male,Turk,Middle School,Single,Employed,Homeless,True,1,0,1,False,True,False,False,True,False,False,True,True,False,True,1
+25-34,Female,Turk,Primary School,Single,Unemployed,Rent,False,2,0,0,True,False,False,False,False,True,False,False,True,False,True,1
+35-44,Male,Turk,Illiterate,Married,Employed,Rent,False,3,1,0,True,False,False,False,False,False,False,False,False,False,False,1
+25-34,Male,Turk,Primary School,Single,Employed,Houseowner,False,2,2,2,False,True,True,False,False,False,False,True,True,False,False,1
+35-44,Male,Turk,Middle School,Single,Employed,Homeless,True,1,0,1,False,True,False,False,False,False,False,True,True,False,True,1
 35-44,Male,Turk,Middle School,Divorced,Student,Rent,False,2,1,0,True,True,False,False,False,False,False,True,False,True,True,1
 18-24,Male,Turk,Primary School,Single,Unemployed,Houseowner,True,5,1,0,False,True,False,False,False,False,False,True,False,False,True,1
 35-44,Male,Turk,Primary School,Married,Employed,Homeless,True,1,1,0,False,False,False,False,False,False,False,True,True,True,False,1
 25-34,Male,Kurd,High School,Single,Unemployed,Rent,True,1,0,0,False,False,False,False,True,True,False,False,True,True,False,1
-18-24,Male,Turk,Bachelor’s Degree,Single,Student,Rent,False,2,0,1,False,True,False,False,True,False,True,False,True,True,True,0
+18-24,Male,Turk,Bachelor’s Degree,Single,Student,Rent,False,2,0,1,False,True,False,False,True,False,True,False,True,True,True,1
 55-64,Male,Turk,Middle School,Single,Employed,Rent,False,2,0,0,False,False,False,True,False,False,False,True,False,True,True,1
 55-64,Male,Turk,Primary School,Married,Unemployed,Rent,False,2,1,0,False,False,False,False,False,False,False,True,True,True,True,1
-45-54,Male,Turk,Primary School,Single,Employed,Rent,False,1,0,0,True,True,False,True,False,False,False,True,True,False,False,1
+45-54,Male,Turk,Primary School,Single,Employed,Rent,False,1,0,0,True,True,False,False,False,False,False,True,True,False,False,1
 25-34,Male,Turk,Illiterate,Married,Employed,Houseowner,True,2,0,0,True,True,False,False,False,False,False,False,True,True,True,0
-18-24,Male,Turk,High School,Single,Unemployed,Houseowner,False,4,0,0,True,True,True,False,False,False,False,True,True,True,True,1
+18-24,Male,Turk,High School,Single,Unemployed,Houseowner,False,4,0,0,True,True,False,False,False,False,False,True,True,True,True,1
 35-44,Male,Turk,Literate without schooling,Divorced,Employed,Rent,True,4,0,0,True,True,False,False,True,False,False,True,False,True,False,1
 25-34,Male,Turk,Middle School,Single,Unemployed,Houseowner,False,0,0,1,False,True,False,False,False,True,False,False,True,True,True,1
-18-24,Male,Turk,Primary School,Married,Student,Houseowner,False,4,1,0,False,False,True,False,True,False,False,True,True,True,True,0
-25-34,Male,Turk,Middle School,Married,Employed,Houseowner,False,2,0,0,False,True,False,False,False,True,True,False,True,True,False,0
+18-24,Male,Turk,Primary School,Married,Student,Houseowner,False,4,1,0,False,False,True,False,True,False,False,True,True,True,True,1
+25-34,Male,Turk,Middle School,Married,Employed,Houseowner,False,2,0,0,False,True,False,False,False,True,True,False,True,True,False,1
 18-24,Male,Turk,Middle School,Married,Unemployed,Houseowner,False,2,0,0,True,True,False,False,False,False,False,True,True,True,False,1
 45-54,Male,Turk,High School,Married,Employed,Rent,True,3,0,0,True,False,False,False,False,True,True,True,True,True,True,0
 25-34,Male,Turk,Primary School,Married,Retired,Rent,True,0,0,1,False,False,False,True,False,False,False,False,False,False,True,1
 35-44,Male,Kurd,Illiterate,Married,Unemployed,Houseowner,False,1,1,1,False,False,False,False,False,False,False,True,False,False,True,1
-25-34,Male,Turk,Primary School,Single,Student,Houseowner,True,2,0,0,True,True,True,False,False,False,False,True,False,True,True,0
-35-44,Male,Turk,High School,Single,Unemployed,Houseowner,True,1,0,0,False,True,False,True,False,False,False,True,False,True,False,1
+25-34,Male,Turk,Primary School,Single,Student,Houseowner,True,2,0,0,True,True,False,False,False,False,False,True,False,True,True,0
+35-44,Male,Turk,High School,Single,Unemployed,Houseowner,True,1,0,0,False,True,False,False,False,False,False,True,False,True,False,1
 35-44,Male,Kurd,High School,Divorced,Employed,Rent,True,3,0,1,False,False,False,False,False,False,True,True,False,True,True,0
-25-34,Male,Turk,Middle School,Married,Unemployed,Rent,False,0,0,1,False,True,False,True,False,True,False,True,True,False,False,1
+25-34,Male,Turk,Middle School,Married,Unemployed,Rent,False,0,0,1,False,True,False,False,False,True,False,True,True,False,False,1
 55-64,Male,Turk,Middle School,Married,Retired,Houseowner,True,3,1,1,False,True,False,False,False,False,False,True,False,True,False,0
 35-44,Male,Turk,Middle School,Single,Unemployed,Rent,True,5,0,1,True,False,False,False,False,False,False,True,False,True,True,1
 55-64,Male,Turk,Primary School,Single,Student,Rent,False,0,0,1,True,False,False,False,False,True,False,True,False,False,True,0
-45-54,Male,Turk,High School,Single,Retired,Rent,False,1,0,0,False,False,False,True,False,False,False,False,True,True,True,0
-35-44,Male,Turk,Primary School,Married,Employed,Rent,True,1,0,0,False,False,False,True,False,False,True,False,True,True,False,0
+45-54,Male,Turk,High School,Single,Retired,Rent,False,1,0,0,False,False,False,False,False,False,False,False,True,True,True,0
+35-44,Male,Turk,Primary School,Married,Employed,Rent,True,1,0,0,False,False,False,False,False,False,True,False,True,True,False,1
 45-54,Male,Turk,Primary School,Single,Employed,Houseowner,True,0,1,1,False,False,False,True,False,False,False,True,False,True,False,1
 18-24,Male,Turk,Middle School,Single,Unemployed,Rent,True,1,0,1,False,True,False,False,False,True,False,True,False,False,True,1
 25-34,Male,Turk,Literate without schooling,Single,Unemployed,Houseowner,True,2,0,0,True,True,False,False,False,False,False,True,False,False,False,1
-18-24,Female,Turk,Primary School,Single,Student,Rent,True,2,0,0,False,True,False,False,False,True,False,True,True,False,True,0
+18-24,Female,Turk,Primary School,Single,Student,Rent,True,2,0,0,False,True,False,False,False,True,False,True,True,False,True,1
 25-34,Male,Turk,High School,Married,Retired,Rent,False,0,1,2,True,True,False,False,False,True,True,False,True,True,False,1
-25-34,Male,Turk,Literate without schooling,Single,Employed,Rent,False,3,0,0,False,False,True,False,False,False,False,False,True,True,True,0
+25-34,Male,Turk,Literate without schooling,Single,Employed,Rent,False,3,0,0,False,False,True,False,False,False,False,False,True,True,True,1
 25-34,Male,Other,Middle School,Married,Employed,Rent,False,0,0,1,False,False,False,False,False,False,True,True,False,False,True,1
-45-54,Male,Turk,Primary School,Single,Student,Houseowner,True,1,0,0,False,False,False,False,False,False,False,True,True,False,False,0
-25-34,Male,Turk,Primary School,Single,Employed,Rent,False,1,0,3,False,True,False,False,True,True,False,True,True,True,True,1
+45-54,Male,Turk,Primary School,Single,Student,Houseowner,True,1,0,0,False,False,False,False,False,False,False,True,True,False,False,1
+25-34,Male,Turk,Primary School,Single,Employed,Rent,False,1,0,3,False,True,False,False,False,True,False,True,True,True,True,1
 25-34,Female,Turk,Primary School,Single,Student,Homeless,True,4,0,0,False,True,True,False,False,False,False,True,False,False,True,1
-35-44,Male,Turk,Primary School,Single,Unemployed,Rent,False,1,0,0,False,True,False,True,True,False,False,True,True,True,True,1
+35-44,Male,Turk,Primary School,Single,Unemployed,Rent,False,1,0,0,False,True,False,False,False,False,False,True,True,True,True,1
 25-34,Female,Turk,Middle School,Single,Unemployed,Houseowner,False,3,1,1,False,True,False,True,False,False,False,False,False,True,True,1
 45-54,Male,Turk,Primary School,Single,Employed,Houseowner,True,1,0,1,True,True,False,False,False,False,False,False,True,True,True,0
-18-24,Male,Turk,Middle School,Married,Unemployed,Houseowner,False,2,1,2,True,False,True,True,False,True,False,True,False,True,False,1
-65+,Male,Turk,Middle School,Single,Unemployed,Rent,True,2,0,0,True,False,True,False,False,False,True,True,True,False,True,1
+18-24,Male,Turk,Middle School,Married,Unemployed,Houseowner,False,2,1,2,True,False,False,False,False,True,False,True,False,True,False,1
+65+,Male,Turk,Middle School,Single,Unemployed,Rent,True,2,0,0,True,False,False,False,False,False,True,True,True,False,True,1
 35-44,Male,Turk,Middle School,Married,Unemployed,Rent,False,1,0,0,True,False,True,False,False,False,False,False,False,True,True,1
-25-34,Male,Kurd,High School,Married,Employed,Houseowner,True,4,0,0,False,False,False,False,True,True,False,True,False,True,False,1
+25-34,Male,Kurd,High School,Married,Employed,Houseowner,True,4,0,0,False,False,False,False,False,True,False,True,False,True,False,1
 15-17,Male,Turk,Middle School,Married,Student,Rent,True,0,1,0,False,False,False,False,False,True,False,True,True,False,True,1
-45-54,Male,Turk,Primary School,Single,Retired,Rent,False,1,0,0,False,True,False,True,False,True,False,True,True,False,True,1
-35-44,Male,Turk,Illiterate,Single,Employed,Rent,True,1,0,2,True,True,True,False,False,True,False,False,True,True,False,1
+45-54,Male,Turk,Primary School,Single,Retired,Rent,False,1,0,0,False,True,False,False,False,True,False,True,True,False,True,1
+35-44,Male,Turk,Illiterate,Single,Employed,Rent,True,1,0,2,True,True,False,False,False,True,False,False,True,True,False,1
 35-44,Male,Other,Primary School,Single,Employed,Rent,False,0,1,0,False,True,False,False,False,False,False,True,False,True,False,1
 35-44,Male,Turk,Middle School,Single,Employed,Rent,True,1,0,1,False,False,False,False,False,False,False,True,False,True,False,1
 18-24,Male,Turk,Literate without schooling,Divorced,Unemployed,Rent,False,2,0,0,False,False,False,False,False,True,False,False,True,True,False,1
 25-34,Male,Other,Middle School,Single,Unemployed,Houseowner,False,1,1,0,False,True,False,False,True,True,False,False,False,False,True,1
 18-24,Male,Kurd,Middle School,Single,Unemployed,Rent,False,1,2,0,False,False,False,False,False,False,False,False,True,False,False,1
-45-54,Male,Kurd,Primary School,Married,Employed,Rent,True,0,0,0,True,False,True,False,False,False,False,True,False,True,True,1
-35-44,Male,Turk,High School,Married,Employed,Rent,True,1,0,1,True,True,True,True,True,False,True,True,False,True,False,1
-25-34,Male,Turk,Literate without schooling,Married,Unemployed,Rent,True,1,1,0,False,True,False,False,False,False,False,False,True,True,True,0
+45-54,Male,Kurd,Primary School,Married,Employed,Rent,True,0,0,0,True,False,False,False,False,False,False,True,False,True,True,1
+35-44,Male,Turk,High School,Married,Employed,Rent,True,1,0,1,True,True,True,False,False,False,True,True,False,True,False,1
+25-34,Male,Turk,Literate without schooling,Married,Unemployed,Rent,True,1,1,0,False,True,False,False,False,False,False,False,True,True,True,1
 18-24,Male,Turk,Literate without schooling,Single,Unemployed,Rent,True,1,0,0,False,False,False,False,False,False,False,False,True,False,False,1
-25-34,Male,Arab,Middle School,Single,Retired,Houseowner,False,1,2,0,False,False,True,False,False,True,False,True,True,True,False,0
-25-34,Male,Turk,Middle School,Married,Employed,Houseowner,False,2,0,1,True,True,True,False,True,True,False,True,True,True,False,1
+25-34,Male,Arab,Middle School,Single,Retired,Houseowner,False,1,2,0,False,False,True,False,False,True,False,True,True,True,False,1
+25-34,Male,Turk,Middle School,Married,Employed,Houseowner,False,2,0,1,True,True,False,False,True,True,False,True,True,True,False,1
 35-44,Male,Turk,Middle School,Single,Unemployed,Houseowner,False,3,0,1,False,False,True,False,False,False,True,False,True,True,True,1
-35-44,Male,Turk,Primary School,Single,Unemployed,Houseowner,False,1,2,2,False,True,False,False,False,False,False,False,True,True,True,0
+35-44,Male,Turk,Primary School,Single,Unemployed,Houseowner,False,1,2,2,False,True,False,False,False,False,False,False,True,True,True,1
 45-54,Male,Kurd,Primary School,Single,Unemployed,Rent,False,2,0,0,False,False,False,False,False,False,False,True,True,True,False,1
-25-34,Male,Turk,High School,Single,Student,Homeless,False,2,1,0,True,False,False,True,False,False,True,True,True,True,False,1
-18-24,Female,Turk,High School,Single,Unemployed,Houseowner,True,0,0,0,True,False,False,False,False,False,True,True,True,False,True,0
-35-44,Male,Turk,Middle School,Single,Retired,Houseowner,False,6,1,1,False,False,False,True,False,True,False,True,True,False,False,1
+25-34,Male,Turk,High School,Single,Student,Homeless,False,2,1,0,True,False,False,False,False,False,True,True,True,True,False,1
+18-24,Female,Turk,High School,Single,Unemployed,Houseowner,True,0,0,0,True,False,False,False,False,False,True,True,True,False,True,1
+35-44,Male,Turk,Middle School,Single,Retired,Houseowner,False,6,1,1,False,False,False,False,False,True,False,True,True,False,False,1
 35-44,Male,Turk,Primary School,Married,Employed,Rent,False,0,1,0,False,False,False,True,False,False,False,True,True,False,False,1
 35-44,Male,Turk,Middle School,Married,Employed,Houseowner,False,2,0,3,True,False,False,False,False,True,True,True,False,True,True,0
-35-44,Male,Turk,Primary School,Married,Student,Rent,True,2,1,1,True,True,False,False,False,True,False,True,False,True,False,0
-25-34,Female,Turk,Literate without schooling,Single,Unemployed,Rent,True,1,1,0,False,False,True,False,False,False,False,True,True,True,True,0
-35-44,Male,Turk,High School,Single,Employed,Rent,True,0,0,0,False,True,False,True,False,False,False,True,True,True,True,0
+35-44,Male,Turk,Primary School,Married,Student,Rent,True,2,1,1,True,True,False,False,False,True,False,True,False,True,False,1
+25-34,Female,Turk,Literate without schooling,Single,Unemployed,Rent,True,1,1,0,False,False,True,False,False,False,False,True,True,True,True,1
+35-44,Male,Turk,High School,Single,Employed,Rent,True,0,0,0,False,True,False,False,False,False,False,True,True,True,True,0
 25-34,Male,Turk,Primary School,Single,Employed,Houseowner,False,1,0,0,False,False,False,False,False,False,False,False,False,False,True,1
 18-24,Male,Turk,High School,Married,Employed,Houseowner,False,0,0,0,False,False,False,False,False,False,False,True,False,True,True,1
-18-24,Male,Turk,Primary School,Married,Retired,Rent,True,4,0,1,False,False,False,False,False,True,False,True,True,True,False,0
+18-24,Male,Turk,Primary School,Married,Retired,Rent,True,4,0,1,False,False,False,False,False,True,False,True,True,True,False,1
 18-24,Male,Turk,Primary School,Single,Employed,Rent,False,3,0,1,True,False,False,False,False,True,False,False,True,False,True,1
 35-44,Male,Turk,Middle School,Divorced,Employed,Houseowner,True,2,0,0,False,False,False,False,False,False,False,True,True,False,False,0
 25-34,Male,Turk,High School,Single,Employed,Rent,True,0,0,0,False,True,False,False,False,False,False,False,True,True,False,1
-35-44,Male,Turk,Middle School,Married,Employed,Houseowner,True,2,1,0,False,False,False,False,False,False,False,False,True,True,False,0
-45-54,Male,Turk,High School,Married,Employed,Rent,False,2,1,0,False,True,False,True,False,False,False,True,True,True,True,0
+35-44,Male,Turk,Middle School,Married,Employed,Houseowner,True,2,1,0,False,False,False,False,False,False,False,False,True,True,False,1
+45-54,Male,Turk,High School,Married,Employed,Rent,False,2,1,0,False,True,False,True,False,False,False,True,True,True,True,1
 25-34,Male,Other,Middle School,Married,Unemployed,Houseowner,False,0,0,0,True,True,False,False,False,False,False,False,False,True,False,1
-25-34,Male,Turk,Middle School,Married,Employed,Homeless,True,2,1,0,True,True,True,False,False,False,True,True,True,True,True,0
+25-34,Male,Turk,Middle School,Married,Employed,Homeless,True,2,1,0,True,True,True,False,False,False,True,True,True,True,True,1
 35-44,Male,Kurd,High School,Married,Student,Houseowner,False,0,0,0,False,False,False,False,False,True,False,True,True,True,True,0
 25-34,Male,Turk,Primary School,Single,Employed,Houseowner,True,0,2,0,True,False,False,True,False,False,False,True,True,False,True,1
-18-24,Male,Turk,Middle School,Married,Unemployed,Houseowner,False,1,0,1,True,False,True,False,False,False,False,True,True,True,True,0
+18-24,Male,Turk,Middle School,Married,Unemployed,Houseowner,False,1,0,1,True,False,True,False,False,False,False,True,True,True,True,1
 25-34,Male,Kurd,Primary School,Single,Retired,Houseowner,False,1,1,1,False,False,False,False,False,True,False,False,True,True,False,1
 25-34,Female,Turk,Bachelor’s Degree,Married,Unemployed,Rent,False,1,1,2,False,True,False,False,False,False,False,True,True,True,True,0
 45-54,Female,Turk,High School,Married,Unemployed,Homeless,True,0,1,1,False,True,False,True,False,False,False,True,False,True,False,1
 45-54,Male,Turk,Literate without schooling,Married,Employed,Houseowner,False,0,0,0,False,False,False,False,False,False,False,True,True,False,True,0
 35-44,Male,Turk,Middle School,Single,Employed,Houseowner,False,1,1,0,False,False,False,False,False,True,False,True,False,True,True,0
 45-54,Male,Arab,High School,Married,Unemployed,Rent,True,1,1,0,False,False,True,False,False,False,True,True,False,True,False,0
-45-54,Male,Kurd,Primary School,Married,Retired,Rent,False,1,0,2,False,True,False,True,False,True,True,True,True,True,False,1
-25-34,Male,Other,Middle School,Married,Unemployed,Rent,True,3,2,0,False,False,False,False,False,False,False,False,True,False,True,0
-45-54,Male,Turk,High School,Single,Unemployed,Houseowner,False,2,1,0,False,False,False,False,False,True,False,True,True,True,True,0
+45-54,Male,Kurd,Primary School,Married,Retired,Rent,False,1,0,2,False,True,False,False,False,True,True,True,True,True,False,1
+25-34,Male,Other,Middle School,Married,Unemployed,Rent,True,3,2,0,False,False,False,False,False,False,False,False,True,False,True,1
+45-54,Male,Turk,High School,Single,Unemployed,Houseowner,False,2,1,0,False,False,False,False,False,True,False,True,True,True,True,1
 35-44,Male,Turk,Illiterate,Single,Student,Houseowner,True,2,1,0,False,True,True,True,False,True,False,False,False,False,True,1
-45-54,Male,Arab,Middle School,Single,Unemployed,Rent,False,0,0,1,False,False,True,True,False,False,True,True,False,True,True,1
+45-54,Male,Arab,Middle School,Single,Unemployed,Rent,False,0,0,1,False,False,False,False,False,False,True,True,False,True,True,1
 45-54,Male,Turk,Primary School,Single,Employed,Houseowner,False,2,1,0,False,False,False,False,False,False,False,False,False,True,False,1
-25-34,Male,Turk,High School,Married,Unemployed,Rent,True,1,0,0,False,False,False,True,True,True,True,False,True,True,False,1
-18-24,Male,Turk,Bachelor’s Degree,Single,Retired,Houseowner,True,2,1,1,True,True,False,True,False,True,True,True,False,False,True,1
+25-34,Male,Turk,High School,Married,Unemployed,Rent,True,1,0,0,False,False,False,False,True,True,True,False,True,True,False,1
+18-24,Male,Turk,Bachelor’s Degree,Single,Retired,Houseowner,True,2,1,1,True,True,False,False,False,True,True,True,False,False,True,0
 25-34,Male,Turk,High School,Divorced,Employed,Rent,True,1,0,1,False,False,False,False,False,False,True,True,True,False,False,0
 25-34,Male,Kurd,Middle School,Single,Unemployed,Houseowner,True,0,0,0,True,True,False,False,False,False,False,False,True,True,True,1
 45-54,Male,Turk,High School,Single,Employed,Rent,True,1,0,0,False,True,False,True,False,False,False,True,True,True,True,0
-45-54,Male,Kurd,High School,Married,Unemployed,Houseowner,False,2,0,0,False,False,False,False,False,True,False,False,True,True,True,0
-15-17,Male,Turk,Primary School,Married,Employed,Rent,True,4,0,0,False,False,False,True,False,False,False,True,False,True,False,1
-35-44,Male,Turk,High School,Single,Unemployed,Houseowner,True,1,1,3,False,True,True,True,False,True,True,True,True,True,True,1
+45-54,Male,Kurd,High School,Married,Unemployed,Houseowner,False,2,0,0,False,False,False,False,False,True,False,False,True,True,True,1
+15-17,Male,Turk,Primary School,Married,Employed,Rent,True,4,0,0,False,False,False,False,False,False,False,True,False,True,False,1
+35-44,Male,Turk,High School,Single,Unemployed,Houseowner,True,1,1,3,False,True,False,True,False,True,True,True,True,True,True,1
 25-34,Male,Turk,Literate without schooling,Married,Student,Rent,False,1,0,1,False,False,False,True,False,True,False,True,True,False,True,1
 25-34,Male,Kurd,Middle School,Married,Employed,Rent,True,2,0,0,False,False,True,False,False,False,False,False,True,False,True,1
-18-24,Male,Turk,Primary School,Single,Unemployed,Rent,False,0,1,0,False,False,False,True,False,False,False,True,False,True,True,1
+18-24,Male,Turk,Primary School,Single,Unemployed,Rent,False,0,1,0,False,False,False,False,False,False,False,True,False,True,True,1
 25-34,Male,Turk,Literate without schooling,Divorced,Student,Rent,False,6,1,0,False,False,False,True,False,False,True,False,False,True,False,1
 55-64,Male,Turk,Literate without schooling,Divorced,Retired,Rent,False,1,1,1,True,False,False,False,False,False,False,False,True,False,True,1
-25-34,Male,Kurd,Middle School,Married,Employed,Rent,False,0,1,0,True,False,True,False,True,False,False,True,True,False,True,1
-35-44,Male,Turk,Primary School,Single,Employed,Houseowner,False,0,1,1,True,True,False,True,False,False,False,True,True,True,False,0
-35-44,Male,Kurd,Middle School,Married,Employed,Rent,True,3,0,0,False,True,True,False,False,False,False,False,False,True,False,1
-25-34,Male,Turk,Literate without schooling,Single,Retired,Houseowner,True,2,0,0,False,False,False,True,False,True,True,True,True,True,False,0
-55-64,Male,Turk,Primary School,Single,Retired,Houseowner,True,1,0,2,False,False,True,False,False,True,False,False,True,True,True,0
+25-34,Male,Kurd,Middle School,Married,Employed,Rent,False,0,1,0,True,False,False,False,False,False,False,True,True,False,True,1
+35-44,Male,Turk,Primary School,Single,Employed,Houseowner,False,0,1,1,True,True,False,False,False,False,False,True,True,True,False,1
+35-44,Male,Kurd,Middle School,Married,Employed,Rent,True,3,0,0,False,True,False,False,False,False,False,False,False,True,False,1
+25-34,Male,Turk,Literate without schooling,Single,Retired,Houseowner,True,2,0,0,False,False,False,True,False,True,True,True,True,True,False,1
+55-64,Male,Turk,Primary School,Single,Retired,Houseowner,True,1,0,2,False,False,False,False,False,True,False,False,True,True,True,0
 55-64,Male,Turk,Middle School,Single,Unemployed,Houseowner,False,2,1,0,True,False,True,False,False,False,True,True,True,True,True,0
 25-34,Female,Turk,High School,Single,Student,Houseowner,True,3,0,0,True,True,False,False,False,False,False,True,True,True,True,1
-25-34,Male,Turk,Primary School,Married,Unemployed,Rent,False,0,0,1,False,True,True,False,False,True,False,False,False,True,True,1
+25-34,Male,Turk,Primary School,Married,Unemployed,Rent,False,0,0,1,False,True,False,False,False,True,False,False,False,True,True,1
 25-34,Male,Turk,Middle School,Married,Unemployed,Rent,False,0,1,0,True,False,False,False,False,False,True,True,True,True,False,1
-25-34,Male,Turk,High School,Married,Employed,Rent,False,2,1,0,False,True,False,True,False,True,False,True,True,True,True,0
-18-24,Female,Kurd,Middle School,Single,Student,Rent,False,2,0,0,False,False,True,False,False,False,False,True,True,True,True,0
+25-34,Male,Turk,High School,Married,Employed,Rent,False,2,1,0,False,True,False,False,False,True,False,True,True,True,True,0
+18-24,Female,Kurd,Middle School,Single,Student,Rent,False,2,0,0,False,False,True,False,False,False,False,True,True,True,True,1
 35-44,Female,Turk,Primary School,Single,Employed,Houseowner,True,2,0,0,False,True,False,True,False,True,True,True,True,False,True,1
 25-34,Male,Turk,Illiterate,Single,Student,Houseowner,False,1,1,1,True,False,False,False,False,False,False,True,False,False,True,1
-18-24,Male,Arab,High School,Divorced,Student,Houseowner,False,2,0,0,True,False,False,False,False,False,False,False,True,True,False,0
-25-34,Male,Turk,Illiterate,Single,Student,Houseowner,True,0,0,2,True,True,True,False,False,True,False,True,False,True,True,1
+18-24,Male,Arab,High School,Divorced,Student,Houseowner,False,2,0,0,True,False,False,False,False,False,False,False,True,True,False,1
+25-34,Male,Turk,Illiterate,Single,Student,Houseowner,True,0,0,2,True,True,False,False,False,True,False,True,False,True,True,1
 45-54,Male,Turk,High School,Married,Employed,Houseowner,True,0,0,0,False,False,False,False,False,False,False,True,False,False,True,0
 25-34,Male,Arab,Middle School,Married,Employed,Houseowner,False,1,0,0,False,True,True,False,False,False,False,True,True,True,True,1
-25-34,Male,Turk,High School,Single,Employed,Rent,False,0,1,1,True,False,False,False,True,False,False,True,True,True,True,1
-25-34,Male,Turk,High School,Married,Employed,Rent,False,4,0,2,False,False,False,True,True,False,False,True,True,True,True,0
+25-34,Male,Turk,High School,Single,Employed,Rent,False,0,1,1,True,False,False,False,False,False,False,True,True,True,True,1
+25-34,Male,Turk,High School,Married,Employed,Rent,False,4,0,2,False,False,False,False,True,False,False,True,True,True,True,1
 65+,Male,Turk,Bachelor’s Degree,Single,Employed,Homeless,False,1,0,0,False,False,False,False,False,False,False,False,False,True,False,0
 25-34,Male,Kurd,Primary School,Married,Retired,Rent,False,5,1,0,True,False,False,False,False,True,True,False,True,True,True,1
 35-44,Male,Turk,High School,Divorced,Unemployed,Rent,False,2,2,0,False,False,False,False,False,False,False,True,True,False,False,1
-35-44,Male,Turk,Primary School,Single,Employed,Houseowner,True,2,4,0,False,True,False,False,False,True,False,True,True,True,False,0
-25-34,Male,Kurd,Middle School,Single,Employed,Rent,True,7,0,2,True,True,True,True,False,True,True,True,False,True,False,1
+35-44,Male,Turk,Primary School,Single,Employed,Houseowner,True,2,4,0,False,True,False,False,False,True,False,True,True,True,False,1
+25-34,Male,Kurd,Middle School,Single,Employed,Rent,True,7,0,2,True,True,False,False,False,True,True,True,False,True,False,1
 35-44,Male,Kurd,Middle School,Married,Unemployed,Rent,True,2,0,1,False,False,False,False,False,True,False,True,True,False,False,1
-25-34,Male,Turk,High School,Divorced,Unemployed,Houseowner,False,2,0,0,False,False,False,False,False,False,False,True,True,True,True,0
+25-34,Male,Turk,High School,Divorced,Unemployed,Houseowner,False,2,0,0,False,False,False,False,False,False,False,True,True,True,True,1
 35-44,Male,Turk,Bachelor’s Degree,Single,Unemployed,Houseowner,False,2,1,0,False,False,False,True,False,False,False,True,True,True,True,0
 35-44,Male,Turk,High School,Married,Retired,Rent,False,0,1,1,False,False,False,False,False,True,True,True,True,True,True,0
 35-44,Male,Turk,Primary School,Married,Unemployed,Houseowner,True,0,2,1,False,False,False,False,False,True,True,True,False,True,False,1
-18-24,Female,Turk,Primary School,Married,Retired,Rent,False,2,0,0,False,False,True,False,False,False,False,True,True,True,False,0
-45-54,Male,Turk,High School,Single,Retired,Rent,False,1,0,0,False,False,False,False,False,True,False,False,False,True,False,0
-25-34,Male,Kurd,Primary School,Married,Employed,Houseowner,False,2,0,0,False,False,True,True,False,True,True,True,False,True,True,1
+18-24,Female,Turk,Primary School,Married,Retired,Rent,False,2,0,0,False,False,False,False,False,False,False,True,True,True,False,1
+45-54,Male,Turk,High School,Single,Retired,Rent,False,1,0,0,False,False,False,False,False,True,False,False,False,True,False,1
+25-34,Male,Kurd,Primary School,Married,Employed,Houseowner,False,2,0,0,False,False,False,False,False,True,True,True,False,True,True,0
 25-34,Male,Kurd,Literate without schooling,Divorced,Retired,Houseowner,False,0,0,2,False,False,False,False,False,True,False,True,True,True,False,1
 18-24,Male,Turk,Primary School,Single,Employed,Houseowner,True,1,0,0,True,True,False,False,False,False,True,True,False,True,True,1
 35-44,Female,Kurd,Primary School,Single,Student,Houseowner,False,2,1,0,False,True,False,False,False,False,False,True,True,True,True,1
-35-44,Male,Turk,Primary School,Divorced,Employed,Houseowner,True,1,0,0,False,True,False,False,True,False,False,False,True,True,True,1
+35-44,Male,Turk,Primary School,Divorced,Employed,Houseowner,True,1,0,0,False,True,False,False,False,False,False,False,True,True,True,1
 18-24,Female,Kurd,Primary School,Single,Retired,Rent,True,2,1,0,False,True,False,True,False,False,False,True,False,True,True,1
-35-44,Male,Turk,Literate without schooling,Married,Retired,Houseowner,True,2,0,0,False,True,True,True,True,False,False,True,True,True,True,0
+35-44,Male,Turk,Literate without schooling,Married,Retired,Houseowner,True,2,0,0,False,True,False,True,False,False,False,True,True,True,True,0
 25-34,Male,Turk,Illiterate,Single,Student,Rent,False,4,1,1,True,False,False,False,False,False,False,True,False,False,True,1
 35-44,Male,Kurd,Bachelor’s Degree,Single,Student,Houseowner,False,1,1,0,False,False,True,False,False,False,False,False,True,True,True,0
-25-34,Female,Turk,Primary School,Married,Employed,Rent,False,1,1,0,True,False,False,False,False,False,False,True,False,True,False,0
+25-34,Female,Turk,Primary School,Married,Employed,Rent,False,1,1,0,True,False,False,False,False,False,False,True,False,True,False,1
 35-44,Male,Turk,Primary School,Single,Employed,Houseowner,False,1,0,0,False,False,False,True,False,True,False,True,True,False,False,1
 25-34,Male,Turk,Middle School,Married,Unemployed,Houseowner,False,0,1,0,False,True,True,False,True,True,True,True,True,True,False,1
-55-64,Female,Turk,Primary School,Single,Employed,Rent,False,1,0,1,False,True,False,False,False,False,False,True,True,True,True,0
+55-64,Female,Turk,Primary School,Single,Employed,Rent,False,1,0,1,False,True,False,False,False,False,False,True,True,True,True,1
 25-34,Male,Turk,High School,Married,Unemployed,Rent,True,1,0,0,False,True,False,False,False,False,False,True,False,False,False,1
-25-34,Male,Turk,High School,Single,Employed,Houseowner,True,0,2,0,False,False,False,True,False,False,True,True,False,False,False,1
-18-24,Male,Turk,Literate without schooling,Single,Retired,Rent,True,0,1,1,False,True,False,False,False,False,False,True,True,True,True,0
+25-34,Male,Turk,High School,Single,Employed,Houseowner,True,0,2,0,False,False,False,False,False,False,True,True,False,False,False,1
+18-24,Male,Turk,Literate without schooling,Single,Retired,Rent,True,0,1,1,False,True,False,False,False,False,False,True,True,True,True,1
 45-54,Male,Turk,Primary School,Divorced,Unemployed,Houseowner,True,0,0,0,False,True,True,False,False,False,True,False,False,True,True,0
-45-54,Male,Turk,High School,Single,Student,Houseowner,True,3,0,0,False,False,True,False,True,True,False,True,True,True,True,1
+45-54,Male,Turk,High School,Single,Student,Houseowner,True,3,0,0,False,False,False,False,False,True,False,True,True,True,True,1
 25-34,Male,Turk,High School,Married,Employed,Houseowner,True,2,2,2,False,False,False,False,False,False,False,True,True,False,True,1
 35-44,Male,Arab,Middle School,Single,Retired,Houseowner,True,1,0,3,True,True,False,False,False,False,True,True,False,True,False,0
-45-54,Male,Turk,Middle School,Married,Retired,Rent,False,4,0,1,True,False,True,False,False,False,False,False,False,True,False,1
+45-54,Male,Turk,Middle School,Married,Retired,Rent,False,4,0,1,True,False,False,False,False,False,False,False,False,True,False,1
 35-44,Male,Turk,Primary School,Single,Unemployed,Houseowner,True,2,3,1,False,False,False,False,False,False,False,True,False,False,True,0
-35-44,Female,Turk,Bachelor’s Degree,Divorced,Unemployed,Houseowner,True,0,1,1,False,False,True,True,False,False,False,False,False,True,False,0
-25-34,Male,Arab,Primary School,Single,Student,Rent,True,1,0,1,False,False,False,False,False,True,False,True,True,False,False,0
-18-24,Male,Turk,High School,Single,Employed,Rent,False,2,0,0,True,True,False,True,False,False,False,True,False,True,False,1
+35-44,Female,Turk,Bachelor’s Degree,Divorced,Unemployed,Houseowner,True,0,1,1,False,False,False,False,False,False,False,False,False,True,False,0
+25-34,Male,Arab,Primary School,Single,Student,Rent,True,1,0,1,False,False,False,False,False,True,False,True,True,False,False,1
+18-24,Male,Turk,High School,Single,Employed,Rent,False,2,0,0,True,True,False,False,False,False,False,True,False,True,False,1
 45-54,Male,Turk,Middle School,Single,Unemployed,Houseowner,True,0,1,1,False,True,False,False,False,True,False,True,True,True,True,0
-45-54,Male,Turk,Middle School,Single,Employed,Rent,True,0,0,1,False,False,False,False,False,False,False,True,True,True,False,0
+45-54,Male,Turk,Middle School,Single,Employed,Rent,True,0,0,1,False,False,False,False,False,False,False,True,True,True,False,1
 35-44,Male,Turk,Middle School,Married,Employed,Houseowner,False,2,1,0,True,False,False,False,False,False,False,False,True,False,True,0
-25-34,Male,Turk,Primary School,Single,Employed,Rent,True,3,0,1,False,False,True,False,False,False,False,False,True,True,True,1
-25-34,Male,Kurd,Primary School,Married,Employed,Rent,True,2,1,1,False,False,True,True,False,False,False,True,True,True,True,1
-35-44,Male,Arab,Primary School,Single,Employed,Homeless,True,2,1,0,False,False,False,False,False,False,False,True,True,True,True,0
-45-54,Male,Turk,Primary School,Single,Employed,Houseowner,True,1,0,0,False,False,False,False,False,False,False,False,True,False,False,0
-45-54,Female,Turk,High School,Married,Retired,Houseowner,True,0,1,0,False,False,False,True,False,False,False,True,True,False,True,0
+25-34,Male,Turk,Primary School,Single,Employed,Rent,True,3,0,1,False,False,False,False,False,False,False,False,True,True,True,1
+25-34,Male,Kurd,Primary School,Married,Employed,Rent,True,2,1,1,False,False,False,False,False,False,False,True,True,True,True,1
+35-44,Male,Arab,Primary School,Single,Employed,Homeless,True,2,1,0,False,False,False,False,False,False,False,True,True,True,True,1
+45-54,Male,Turk,Primary School,Single,Employed,Houseowner,True,1,0,0,False,False,False,False,False,False,False,False,True,False,False,1
+45-54,Female,Turk,High School,Married,Retired,Houseowner,True,0,1,0,False,False,False,False,False,False,False,True,True,False,True,0
 35-44,Female,Arab,Primary School,Married,Unemployed,Houseowner,True,1,0,0,True,False,False,False,False,False,False,True,True,True,True,0
 35-44,Male,Turk,Literate without schooling,Single,Retired,Houseowner,False,1,1,0,False,True,False,True,False,False,False,True,True,True,True,0
-18-24,Male,Turk,Bachelor’s Degree,Single,Unemployed,Houseowner,False,0,1,0,False,False,True,False,True,False,False,True,True,False,False,1
+18-24,Male,Turk,Bachelor’s Degree,Single,Unemployed,Houseowner,False,0,1,0,False,False,True,False,False,False,False,True,True,False,False,1
 25-34,Male,Turk,High School,Single,Employed,Rent,False,1,0,0,False,True,False,False,False,True,False,True,False,True,True,0
-45-54,Male,Turk,High School,Married,Unemployed,Houseowner,True,1,0,2,False,True,False,True,False,False,False,True,False,True,False,1
+45-54,Male,Turk,High School,Married,Unemployed,Houseowner,True,1,0,2,False,True,False,False,False,False,False,True,False,True,False,1
 35-44,Male,Turk,Bachelor’s Degree,Married,Unemployed,Houseowner,False,1,1,1,False,False,False,False,False,False,False,True,False,True,True,0
-18-24,Male,Turk,Primary School,Single,Employed,Rent,True,2,1,1,False,True,False,True,False,True,False,True,True,False,True,1
-18-24,Male,Arab,Primary School,Married,Unemployed,Houseowner,True,3,2,1,True,True,True,True,False,True,False,True,False,True,True,1
-35-44,Male,Arab,High School,Married,Employed,Rent,False,1,0,1,False,True,False,True,False,True,True,True,True,True,True,0
+18-24,Male,Turk,Primary School,Single,Employed,Rent,True,2,1,1,False,True,False,False,False,True,False,True,True,False,True,1
+18-24,Male,Arab,Primary School,Married,Unemployed,Houseowner,True,3,2,1,True,True,False,False,False,True,False,True,False,True,True,1
+35-44,Male,Arab,High School,Married,Employed,Rent,False,1,0,1,False,True,False,False,False,True,True,True,True,True,True,0
 15-17,Female,Turk,Middle School,Married,Unemployed,Houseowner,True,2,0,1,False,False,False,False,False,False,False,False,True,True,True,1
-25-34,Male,Turk,Primary School,Married,Unemployed,Houseowner,True,4,0,0,False,False,False,False,False,False,False,True,True,True,True,0
-35-44,Male,Other,High School,Single,Employed,Houseowner,False,2,0,1,False,False,True,False,False,False,False,True,False,True,False,0
-35-44,Male,Kurd,Primary School,Single,Employed,Houseowner,False,0,0,0,True,True,True,True,True,True,True,False,True,True,False,1
-35-44,Female,Turk,Primary School,Single,Student,Rent,True,2,1,1,False,False,False,True,False,False,False,False,True,True,True,0
+25-34,Male,Turk,Primary School,Married,Unemployed,Houseowner,True,4,0,0,False,False,False,False,False,False,False,True,True,True,True,1
+35-44,Male,Other,High School,Single,Employed,Houseowner,False,2,0,1,False,False,False,False,False,False,False,True,False,True,False,1
+35-44,Male,Kurd,Primary School,Single,Employed,Houseowner,False,0,0,0,True,True,False,True,False,True,True,False,True,True,False,1
+35-44,Female,Turk,Primary School,Single,Student,Rent,True,2,1,1,False,False,False,True,False,False,False,False,True,True,True,1
 25-34,Male,Arab,Middle School,Single,Unemployed,Houseowner,False,3,0,1,False,False,False,False,True,True,False,True,True,True,True,1
 35-44,Male,Kurd,Middle School,Married,Employed,Rent,False,1,0,0,False,True,False,False,False,False,True,True,False,True,False,1
-25-34,Male,Turk,Middle School,Divorced,Retired,Houseowner,True,1,0,0,False,False,False,False,False,False,False,False,False,False,True,1
+25-34,Male,Turk,Middle School,Divorced,Retired,Houseowner,True,1,0,0,False,False,False,False,False,False,False,False,False,False,True,0
 25-34,Male,Turk,Literate without schooling,Single,Employed,Houseowner,True,1,0,0,False,True,False,True,False,True,False,False,True,False,True,1
 35-44,Male,Turk,High School,Single,Unemployed,Rent,True,2,0,0,True,False,False,False,False,False,False,False,True,False,False,1
 35-44,Female,Turk,Primary School,Single,Retired,Houseowner,True,4,0,0,False,False,False,False,False,True,False,False,True,True,False,0
-45-54,Male,Turk,Primary School,Divorced,Employed,Rent,True,4,1,0,True,False,False,False,False,False,False,True,False,True,True,0
+45-54,Male,Turk,Primary School,Divorced,Employed,Rent,True,4,1,0,True,False,False,False,False,False,False,True,False,True,True,1
 35-44,Male,Kurd,High School,Single,Employed,Homeless,False,1,1,2,False,True,False,False,False,False,False,True,True,True,True,1
-35-44,Male,Turk,High School,Married,Employed,Rent,False,1,0,0,True,False,False,True,False,False,False,True,False,False,True,1
-18-24,Female,Turk,High School,Single,Employed,Rent,False,6,2,0,True,False,True,False,False,True,False,True,True,False,False,1
-25-34,Male,Turk,High School,Single,Employed,Houseowner,True,1,1,0,False,False,True,False,False,True,False,True,False,False,True,1
-25-34,Male,Turk,Middle School,Divorced,Unemployed,Houseowner,False,2,2,1,False,False,False,False,False,False,False,True,True,True,True,0
+35-44,Male,Turk,High School,Married,Employed,Rent,False,1,0,0,True,False,False,False,False,False,False,True,False,False,True,1
+18-24,Female,Turk,High School,Single,Employed,Rent,False,6,2,0,True,False,False,False,False,True,False,True,True,False,False,1
+25-34,Male,Turk,High School,Single,Employed,Houseowner,True,1,1,0,False,False,False,False,False,True,False,True,False,False,True,0
+25-34,Male,Turk,Middle School,Divorced,Unemployed,Houseowner,False,2,2,1,False,False,False,False,False,False,False,True,True,True,True,1
 25-34,Male,Arab,Middle School,Divorced,Employed,Houseowner,False,0,1,0,False,True,False,False,False,True,False,True,True,True,True,1
-55-64,Male,Turk,Literate without schooling,Single,Unemployed,Rent,False,1,1,0,False,True,False,False,False,False,False,False,True,True,True,0
+55-64,Male,Turk,Literate without schooling,Single,Unemployed,Rent,False,1,1,0,False,True,False,False,False,False,False,False,True,True,True,1
 25-34,Male,Turk,Primary School,Divorced,Retired,Homeless,True,3,1,0,False,False,True,False,False,False,False,True,True,True,False,1
-45-54,Male,Turk,Primary School,Married,Student,Houseowner,False,4,0,2,False,False,False,True,False,True,True,True,True,True,False,1
+45-54,Male,Turk,Primary School,Married,Student,Houseowner,False,4,0,2,False,False,False,False,False,True,True,True,True,True,False,1
 35-44,Male,Turk,Primary School,Married,Unemployed,Rent,True,3,0,0,False,False,False,False,False,True,False,True,False,False,False,1
 45-54,Male,Turk,Middle School,Single,Employed,Houseowner,True,2,4,2,True,True,True,False,False,False,False,True,True,True,True,0
 25-34,Female,Turk,Middle School,Married,Unemployed,Rent,True,0,0,0,False,False,False,False,False,False,False,False,False,True,True,0
 35-44,Female,Turk,Literate without schooling,Single,Unemployed,Houseowner,False,1,0,0,False,True,False,False,False,False,False,True,False,True,True,0
-25-34,Male,Turk,Primary School,Married,Unemployed,Homeless,False,1,0,0,False,False,False,True,False,False,False,False,True,False,True,1
-25-34,Male,Turk,Middle School,Single,Employed,Rent,True,3,0,0,True,False,True,False,False,False,False,True,False,True,False,0
-35-44,Female,Turk,Literate without schooling,Single,Retired,Houseowner,True,4,0,0,True,False,True,False,False,True,True,True,False,True,True,1
+25-34,Male,Turk,Primary School,Married,Unemployed,Homeless,False,1,0,0,False,False,False,False,False,False,False,False,True,False,True,1
+25-34,Male,Turk,Middle School,Single,Employed,Rent,True,3,0,0,True,False,True,False,False,False,False,True,False,True,False,1
+35-44,Female,Turk,Literate without schooling,Single,Retired,Houseowner,True,4,0,0,True,False,False,False,False,True,True,True,False,True,True,1
 25-34,Male,Arab,High School,Single,Unemployed,Houseowner,True,1,0,0,True,True,False,True,False,False,False,True,True,False,True,1
 18-24,Male,Turk,Middle School,Married,Employed,Houseowner,True,1,0,0,False,False,True,False,False,False,True,True,False,True,True,0
-35-44,Male,Turk,Middle School,Single,Employed,Houseowner,True,1,0,1,False,True,False,True,False,True,False,False,True,True,False,1
-25-34,Male,Turk,Middle School,Married,Unemployed,Houseowner,True,1,0,0,True,True,True,False,False,True,False,True,True,True,True,0
-55-64,Female,Turk,High School,Divorced,Student,Rent,False,2,3,0,False,False,False,False,True,True,False,False,False,True,True,1
-55-64,Male,Turk,Primary School,Single,Student,Rent,True,2,0,0,False,False,True,False,False,True,False,True,True,False,True,0
+35-44,Male,Turk,Middle School,Single,Employed,Houseowner,True,1,0,1,False,True,False,False,False,True,False,False,True,True,False,1
+25-34,Male,Turk,Middle School,Married,Unemployed,Houseowner,True,1,0,0,True,True,True,False,False,True,False,True,True,True,True,1
+55-64,Female,Turk,High School,Divorced,Student,Rent,False,2,3,0,False,False,False,False,False,True,False,False,False,True,True,1
+55-64,Male,Turk,Primary School,Single,Student,Rent,True,2,0,0,False,False,False,False,False,True,False,True,True,False,True,0
 45-54,Male,Turk,Middle School,Married,Student,Rent,True,2,1,1,False,True,False,False,False,False,False,False,True,False,False,0
-25-34,Male,Other,Middle School,Single,Employed,Houseowner,True,3,0,0,False,False,False,False,False,False,True,True,True,True,True,0
-18-24,Male,Turk,Primary School,Married,Unemployed,Rent,False,1,0,1,True,False,True,False,False,True,True,False,False,True,False,1
+25-34,Male,Other,Middle School,Single,Employed,Houseowner,True,3,0,0,False,False,False,False,False,False,True,True,True,True,True,1
+18-24,Male,Turk,Primary School,Married,Unemployed,Rent,False,1,0,1,True,False,False,False,False,True,True,False,False,True,False,1
 45-54,Male,Turk,High School,Single,Unemployed,Rent,False,2,0,1,False,False,False,False,False,False,False,True,False,True,False,1
 25-34,Male,Turk,High School,Married,Employed,Houseowner,False,1,0,0,False,True,False,False,False,False,True,True,True,True,True,0
-55-64,Male,Other,Middle School,Married,Employed,Rent,True,2,0,0,False,False,False,False,False,False,True,True,False,True,False,0
-55-64,Male,Turk,High School,Divorced,Student,Rent,False,1,1,0,False,True,False,True,False,False,False,False,False,True,True,1
-45-54,Male,Turk,High School,Married,Employed,Houseowner,True,1,0,2,True,True,False,False,False,True,False,True,True,True,False,0
-25-34,Male,Turk,Middle School,Single,Unemployed,Houseowner,False,2,1,0,False,True,False,True,False,False,False,True,True,False,True,1
+55-64,Male,Other,Middle School,Married,Employed,Rent,True,2,0,0,False,False,False,False,False,False,True,True,False,True,False,1
+55-64,Male,Turk,High School,Divorced,Student,Rent,False,1,1,0,False,True,False,False,False,False,False,False,False,True,True,1
+45-54,Male,Turk,High School,Married,Employed,Houseowner,True,1,0,2,True,True,False,False,False,True,False,True,True,True,False,1
+25-34,Male,Turk,Middle School,Single,Unemployed,Houseowner,False,2,1,0,False,True,False,False,False,False,False,True,True,False,True,1
 25-34,Male,Turk,High School,Married,Employed,Houseowner,False,1,0,2,True,False,False,False,False,False,False,False,False,True,True,0
-45-54,Male,Turk,Middle School,Married,Employed,Houseowner,False,1,1,0,False,True,True,False,False,True,False,True,False,True,True,0
-25-34,Male,Kurd,Middle School,Married,Employed,Rent,False,0,0,0,False,True,True,False,False,True,False,True,False,True,True,1
+45-54,Male,Turk,Middle School,Married,Employed,Houseowner,False,1,1,0,False,True,False,False,False,True,False,True,False,True,True,1
+25-34,Male,Kurd,Middle School,Married,Employed,Rent,False,0,0,0,False,True,False,False,False,True,False,True,False,True,True,1
 25-34,Male,Turk,Middle School,Single,Retired,Rent,False,1,0,1,True,True,False,False,False,True,False,True,True,False,False,1
-35-44,Male,Turk,High School,Divorced,Student,Rent,True,1,0,0,False,False,False,False,False,True,False,True,True,True,True,0
+35-44,Male,Turk,High School,Divorced,Student,Rent,True,1,0,0,False,False,False,False,False,True,False,True,True,True,True,1
 55-64,Male,Turk,Primary School,Married,Retired,Houseowner,False,2,0,1,True,False,False,False,False,False,False,False,True,True,False,0
-35-44,Male,Turk,High School,Married,Unemployed,Houseowner,True,0,1,0,False,True,False,True,False,False,False,False,True,True,True,0
+35-44,Male,Turk,High School,Married,Unemployed,Houseowner,True,0,1,0,False,True,False,False,False,False,False,False,True,True,True,0
 35-44,Male,Turk,High School,Single,Employed,Rent,False,2,0,0,False,False,False,True,False,False,False,True,True,False,False,1
-18-24,Male,Turk,Illiterate,Married,Unemployed,Rent,True,3,0,0,False,False,False,True,False,False,True,False,False,True,True,1
+18-24,Male,Turk,Illiterate,Married,Unemployed,Rent,True,3,0,0,False,False,False,False,False,False,True,False,False,True,True,1
 35-44,Male,Kurd,High School,Single,Unemployed,Houseowner,True,0,0,0,False,False,False,False,False,False,True,True,True,False,True,0
-65+,Male,Turk,Literate without schooling,Married,Student,Rent,True,2,1,0,False,True,False,True,False,False,True,True,False,False,True,1
-25-34,Male,Turk,Primary School,Single,Employed,Rent,True,2,0,0,False,False,False,False,False,False,False,True,True,False,False,0
+65+,Male,Turk,Literate without schooling,Married,Student,Rent,True,2,1,0,False,True,False,False,False,False,True,True,False,False,True,1
+25-34,Male,Turk,Primary School,Single,Employed,Rent,True,2,0,0,False,False,False,False,False,False,False,True,True,False,False,1
 35-44,Male,Turk,High School,Married,Unemployed,Houseowner,True,1,0,0,False,False,True,False,False,True,False,True,True,True,True,0
-45-54,Male,Turk,Primary School,Divorced,Employed,Houseowner,False,2,0,2,False,False,False,True,True,False,False,True,True,True,True,0
+45-54,Male,Turk,Primary School,Divorced,Employed,Houseowner,False,2,0,2,False,False,False,True,True,False,False,True,True,True,True,1
 35-44,Male,Turk,High School,Single,Employed,Rent,True,0,0,0,True,True,False,False,False,False,False,False,True,True,True,0
-35-44,Male,Turk,High School,Divorced,Student,Houseowner,True,3,1,0,False,False,False,False,True,True,False,False,True,False,False,1
-35-44,Male,Turk,Middle School,Single,Unemployed,Houseowner,False,3,0,0,True,False,False,True,False,False,True,True,False,True,True,0
+35-44,Male,Turk,High School,Divorced,Student,Houseowner,True,3,1,0,False,False,False,False,False,True,False,False,True,False,False,1
+35-44,Male,Turk,Middle School,Single,Unemployed,Houseowner,False,3,0,0,True,False,False,False,False,False,True,True,False,True,True,0
 25-34,Male,Kurd,Illiterate,Married,Employed,Houseowner,True,0,0,0,False,False,False,False,False,False,False,True,False,True,True,0
-25-34,Male,Arab,Primary School,Married,Employed,Houseowner,False,1,1,1,True,True,False,False,False,False,False,False,True,True,True,0
+25-34,Male,Arab,Primary School,Married,Employed,Houseowner,False,1,1,1,True,True,False,False,False,False,False,False,True,True,True,1
 45-54,Male,Turk,Middle School,Married,Unemployed,Rent,False,2,1,0,True,True,False,False,False,False,False,False,True,True,False,1
 45-54,Male,Turk,Bachelor’s Degree,Married,Student,Rent,False,1,1,0,False,False,False,False,False,False,False,False,False,True,False,1
 45-54,Male,Turk,Middle School,Married,Retired,Houseowner,False,2,0,1,False,False,False,False,False,False,True,True,True,True,True,0
 45-54,Male,Turk,Primary School,Single,Retired,Rent,True,0,3,1,False,True,False,False,False,False,True,False,True,True,True,0
 35-44,Male,Turk,Middle School,Single,Student,Rent,False,1,0,2,True,False,False,True,False,False,True,True,True,False,True,1
-25-34,Female,Turk,Middle School,Married,Employed,Rent,True,3,0,0,False,True,False,False,False,False,False,True,False,True,True,0
+25-34,Female,Turk,Middle School,Married,Employed,Rent,True,3,0,0,False,True,False,False,False,False,False,True,False,True,True,1
 45-54,Male,Turk,High School,Married,Unemployed,Houseowner,True,2,1,0,False,False,False,False,False,False,False,True,True,True,True,0
 35-44,Female,Turk,Literate without schooling,Married,Unemployed,Houseowner,False,3,0,0,False,False,False,True,False,False,False,True,True,True,False,1
 35-44,Male,Turk,High School,Married,Employed,Homeless,True,1,1,1,True,False,False,False,False,False,False,True,False,True,True,1
 45-54,Male,Turk,Middle School,Single,Student,Rent,False,0,1,1,False,False,False,False,False,False,False,True,True,False,False,1
-45-54,Male,Turk,High School,Married,Employed,Houseowner,False,2,0,0,True,True,False,False,False,True,False,True,True,True,True,0
-25-34,Female,Turk,Primary School,Single,Retired,Houseowner,False,1,0,0,False,False,False,False,False,True,True,False,True,True,False,0
+45-54,Male,Turk,High School,Married,Employed,Houseowner,False,2,0,0,True,True,False,False,False,True,False,True,True,True,True,1
+25-34,Female,Turk,Primary School,Single,Retired,Houseowner,False,1,0,0,False,False,False,False,False,True,True,False,True,True,False,1
 25-34,Male,Turk,Middle School,Married,Unemployed,Houseowner,False,1,1,1,False,True,False,False,False,True,False,True,False,True,True,1
 18-24,Male,Turk,High School,Single,Unemployed,Rent,True,0,0,1,False,False,False,False,False,False,False,True,True,False,True,1
-35-44,Male,Kurd,Literate without schooling,Single,Unemployed,Rent,True,2,1,0,False,False,False,False,True,True,True,True,False,True,True,1
+35-44,Male,Kurd,Literate without schooling,Single,Unemployed,Rent,True,2,1,0,False,False,False,False,False,True,True,True,False,True,True,1
 18-24,Male,Turk,High School,Single,Retired,Houseowner,False,1,0,1,False,False,False,False,False,True,False,False,False,False,True,1
 25-34,Male,Turk,Middle School,Single,Unemployed,Houseowner,True,6,0,3,False,True,False,False,True,False,False,True,True,True,True,1
 35-44,Male,Turk,Literate without schooling,Married,Unemployed,Rent,False,3,0,0,False,False,False,False,False,False,False,True,False,True,False,1
@@ -292,10 +292,10 @@ age_group,gender,race_ethnicity,education_level,marital_status,employment_status
 18-24,Male,Turk,Literate without schooling,Single,Employed,Rent,True,1,0,1,False,False,True,False,False,False,False,False,True,True,True,1
 18-24,Male,Kurd,Middle School,Single,Student,Homeless,True,2,1,0,False,False,False,False,False,False,True,True,True,False,True,1
 45-54,Male,Kurd,Primary School,Single,Unemployed,Houseowner,True,3,0,0,False,False,False,True,False,False,True,True,True,True,True,0
-25-34,Male,Turk,Middle School,Single,Unemployed,Rent,True,2,0,0,False,True,False,False,False,False,True,False,True,True,True,0
-18-24,Male,Turk,Literate without schooling,Married,Employed,Houseowner,False,2,0,1,False,True,False,False,False,False,True,True,True,True,False,0
+25-34,Male,Turk,Middle School,Single,Unemployed,Rent,True,2,0,0,False,True,False,False,False,False,True,False,True,True,True,1
+18-24,Male,Turk,Literate without schooling,Married,Employed,Houseowner,False,2,0,1,False,True,False,False,False,False,True,True,True,True,False,1
 35-44,Male,Turk,High School,Married,Employed,Rent,True,2,0,2,True,False,False,True,False,True,False,True,False,False,False,1
 35-44,Male,Turk,Bachelor’s Degree,Married,Student,Rent,True,0,0,0,False,False,False,False,False,True,False,True,True,True,False,0
-25-34,Male,Kurd,Bachelor’s Degree,Single,Employed,Rent,True,1,1,1,False,True,True,False,False,True,True,True,False,False,True,1
-35-44,Male,Turk,High School,Single,Employed,Rent,False,0,2,1,True,False,False,False,False,False,False,True,True,False,False,0
-18-24,Male,Turk,Primary School,Married,Employed,Houseowner,False,2,0,2,True,False,False,True,False,False,True,True,True,False,False,1
+25-34,Male,Kurd,Bachelor’s Degree,Single,Employed,Rent,True,1,1,1,False,True,False,False,False,True,True,True,False,False,True,0
+35-44,Male,Turk,High School,Single,Employed,Rent,False,0,2,1,True,False,False,False,False,False,False,True,True,False,False,1
+18-24,Male,Turk,Primary School,Married,Employed,Houseowner,False,2,0,2,True,False,False,False,False,False,True,True,True,False,False,1

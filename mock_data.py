@@ -38,19 +38,19 @@ yes_no = [True, False]
 housing_recidivism_weight = {
     "Houseowner": 0.9,
     "Rent": 1.1,
-    "Homeless": 1.5
+    "Homeless": 2
 }
 
 gender_recidivism_weight = {
     "Male": 1.0,
-    "Female": 0.7
+    "Female": 0.9
 }
 
 race_recidivism_weight = {
     "Turk": 1.0,
-    "Kurd": 1.2,
+    "Kurd": 1.1,
     "Arab": 1.1,
-    "Other": 0.9
+    "Other": 1.1
 }
 
 education_recidivism_weight = {
@@ -59,35 +59,35 @@ education_recidivism_weight = {
     "Primary School": 1.3,
     "Middle School": 1.2,
     "High School": 1.0,
-    "Bachelor’s Degree": 0.7,
-    "Master/PhD": 0.5
+    "Bachelor’s Degree": 0.8,
+    "Master/PhD": 0.7
 }
 
 age_recidivism_weight = {
-    "12-14": 1.1,
-    "15-17": 1.4,
-    "18-24": 1.3,
+    "12-14": 1.8,
+    "15-17": 1.6,
+    "18-24": 1.5,
     "25-34": 1.2,
     "35-44": 1.0,
-    "45-54": 0.8,
-    "55-64": 0.7,
-    "65+": 0.5
+    "45-54": 0.9,
+    "55-64": 0.8,
+    "65+": 0.6
 }
 
 marital_status_weight = {
-    "Single": 1.1,
+    "Single": 1.0,
     "Married": 0.9,
     "Divorced": 1.3
 }
 
 employment_status_weight = {
-    "Employed": 0.8,
+    "Employed": 0.9,
     "Unemployed": 1.2,
-    "Student": 0.9,
+    "Student": 1,
     "Retired": 0.7
 }
 
-base_recidivism_rate = 0.4
+base_recidivism_rate = 0.45
 
 # -------------------------------
 # Veri üretimi
@@ -109,9 +109,9 @@ mock_data = pd.DataFrame({
     "prior_violent_offenses": np.random.poisson(0.5, n_samples),
     "prior_probation_violation": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
     "prior_incarceration": np.random.choice(yes_no, n_samples, p=[0.4, 0.6]),
-    "mental_health_issues": np.random.choice(yes_no, n_samples, p=[0.2, 0.8]),
-    "substance_abuse_history": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
-    "gang_affiliation": np.random.choice(yes_no, n_samples, p=[0.1, 0.9]),
+    "mental_health_issues": np.random.choice(yes_no, n_samples, p=[0.1, 0.9]),
+    "substance_abuse_history": np.random.choice(yes_no, n_samples, p=[0.1, 0.9]),
+    "gang_affiliation": np.random.choice(yes_no, n_samples, p=[0.05, 0.95]),
     "aggression_history": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
     "compliance_history": np.random.choice(yes_no, n_samples, p=[0.2, 0.8]),
     "motivation_to_change": np.random.choice(yes_no, n_samples, p=[0.7, 0.3]),
@@ -132,9 +132,8 @@ def calculate_recidivism(row):
     age_weight = age_recidivism_weight.get(row["age_group"], 1.0)
     marital_weight = marital_status_weight.get(row["marital_status"], 1.0)
     employment_weight = employment_status_weight.get(row["employment_status"], 1.0)
-
     prior_offenses_factor = 1 + (row["prior_convictions"] * 0.05)
-    juvenile_offenses_factor = 1 + (row["juvenile_convictions"] * 0.03)
+    juvenile_offenses_factor = 1 + (row["juvenile_convictions"] * 0.06)
     probation_violation_factor = 1.2 if row["prior_probation_violation"] else 1.0
     incarceration_factor = 1.2 if row["prior_incarceration"] else 1.0
     substance_abuse_factor = 1.3 if row["substance_abuse_history"] else 1.0
@@ -143,8 +142,6 @@ def calculate_recidivism(row):
     aggression_factor = 1.2 if row["aggression_history"] else 1.0
     motivation_factor = 0.8 if row["motivation_to_change"] else 1.0
     compliance_factor = 1.2 if not row["compliance_history"] else 1.0
-    stable_employment_factor = 0.8 if row["stable_employment_past"] else 1.2
-    stable_residence_factor = 0.8 if row["stable_residence_past"] else 1.2
     positive_social_support_factor = 0.8 if row["positive_social_support"] else 1.2
     dependents_factor = 0.9 if row["has_dependents"] else 1.1
 
@@ -153,7 +150,7 @@ def calculate_recidivism(row):
     combined_weight *= (prior_offenses_factor * juvenile_offenses_factor * probation_violation_factor *
                         incarceration_factor * substance_abuse_factor * mental_health_factor *
                         gang_affiliation_factor * aggression_factor * motivation_factor *
-                        compliance_factor * stable_employment_factor * stable_residence_factor *
+                        compliance_factor *
                         positive_social_support_factor * dependents_factor)
 
     personal_recidivism_probability = base_recidivism_rate * combined_weight
