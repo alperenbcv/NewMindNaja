@@ -1,103 +1,102 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from imblearn.pipeline import Pipeline
 from imblearn.over_sampling import SMOTE
 import shap
 
-# 1. Veriyi oku
-df = pd.read_csv("mock_compas_data_weighted_full.csv")
+# 1) Veriyi oku ve dağılımı kontrol et
+data = pd.read_csv("mock_compas_data_weighted_full.csv")
+print("Risk level dağılımı:\n", data["recidivism"].value_counts(), "\n")
 
-# 2. Özellikler ve hedef değişkeni ayır
-X = df.drop(columns=["recidivism"])
-y = df["recidivism"]
+# 2) Özellikler / hedef
+X = data.drop(columns=["recidivism"])
+y = data["recidivism"]
 
-# 3. Kategorikleri one-hot encoding ile dönüştür
+# 3) One-hot encoding
 X = pd.get_dummies(X, drop_first=True)
 
-# 4. SMOTE ile dengele (random_state ekleyerek tekrarlanabilirlik)
-smote = SMOTE(random_state=42)
-X_res, y_res = smote.fit_resample(X, y)
-print("SMOTE sonrası sınıf dağılımı:\n", pd.Series(y_res).value_counts(), "\n")
-
-# 5. Eğitim/test seti (stratify ile orantıyı koru)
+# 4) Train/Test split
 X_train, X_test, y_train, y_test = train_test_split(
-    X_res, y_res,
+    X, y,
     test_size=0.2,
-    random_state=42,
-    stratify=y_res
+    stratify=y,
+    random_state=42
 )
 
-# 6. Özellikleri ölçekle
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled  = scaler.transform(X_test)
+# 5) Pipeline: SMOTE ➔ Ölçekleme ➔ MLPClassifier
+pipeline = Pipeline([
+    ("smote", SMOTE(random_state=42)),
+    ("scaler", StandardScaler()),
+    ("clf", MLPClassifier(random_state=42, early_stopping=True))
+])
 
-# Feature isimlerini sakla
-feature_names = X.columns
-
-# 7. Hiperparametre araması
+# 6) GridSearch hiperparametreleri
 param_grid = {
-    'hidden_layer_sizes': [(100,)],
-    'activation': ['tanh'],
-    'solver': ['adam'],
-    'alpha': [0.001],
-    'learning_rate_init': [0.01],
-    'max_iter': [2000]
+    "clf__hidden_layer_sizes": [(50, 50), (100,), (200,)],
+    "clf__activation": ["tanh", "relu"],
+    "clf__alpha": [1e-4, 1e-3, 1e-2],
+    "clf__learning_rate_init": [1e-3, 1e-2],
+    "clf__max_iter": [1000, 2000]
 }
-mlp = MLPClassifier(random_state=42, early_stopping=True)
+
 grid = GridSearchCV(
-    estimator=mlp,
+    estimator=pipeline,
     param_grid=param_grid,
-    scoring='roc_auc',
+    scoring="accuracy",
     cv=5,
     n_jobs=-1,
     verbose=1
 )
-grid.fit(X_train_scaled, y_train)
 
+# 7) Eğit
+grid.fit(X_train, y_train)
 print("En iyi parametreler:", grid.best_params_)
-print("En iyi CV AUC:", grid.best_score_)
+print("En iyi CV doğruluk:", grid.best_score_)
 
-# 8. En iyi modeli değerlendir
-best_mlp = grid.best_estimator_
-y_pred  = best_mlp.predict(X_test_scaled)
-y_proba = best_mlp.predict_proba(X_test_scaled)[:, 1]
+# 8) Test değerlendirme
+best = grid.best_estimator_
+y_pred = best.predict(X_test)
+y_proba = best.predict_proba(X_test)
 
 print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
 print("\nClassification Report:\n", classification_report(y_test, y_pred))
-print("Test AUC:", roc_auc_score(y_test, y_proba))
 
-# 9. ROC eğrisini çiz
-fpr, tpr, _ = roc_curve(y_test, y_proba)
-plt.figure(figsize=(8, 6))
-plt.plot(fpr, tpr, label=f"ROC Curve (AUC = {roc_auc_score(y_test, y_proba):.2f})")
-plt.plot([0,1], [0,1], linestyle="--", color="gray")
+# 9) ROC AUC (macro, OVR)
+auc_macro = roc_auc_score(pd.get_dummies(y_test), y_proba, average="macro", multi_class="ovr")
+print("Test AUC (macro OVR):", auc_macro)
+
+# 10) High risk (class=2) için ROC eğrisi
+fpr, tpr, _ = roc_curve((y_test == 2).astype(int), y_proba[:, 2])
+plt.figure(figsize=(7, 5))
+plt.plot(fpr, tpr, label=f"High Risk vs Rest (AUC = {roc_auc_score((y_test == 2).astype(int), y_proba[:, 2]):.2f})")
+plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
 plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rate")
-plt.title("ROC Curve - MLPClassifier")
-plt.legend(loc="lower right")
-plt.grid(True)
+plt.title("ROC - High Risk vs Others")
+plt.legend()
+plt.grid()
 plt.tight_layout()
 plt.show()
 
-# 10. SHAP ile açıklayıcı analiz
-#    - Ölçeklenmiş dizileri DataFrame'e çevir
-X_train_df = pd.DataFrame(X_train_scaled, columns=feature_names)
-X_test_df  = pd.DataFrame(X_test_scaled,  columns=feature_names)
+# 11) SHAP açıklayıcılığı (sınıf 2 - yüksek risk)
+feature_names = X.columns
+X_tr_resampled, _ = best.named_steps["smote"].fit_resample(X_train, y_train)
+X_tr_scaled = best.named_steps["scaler"].transform(X_tr_resampled)
+X_te_scaled = best.named_steps["scaler"].transform(X_test)
 
-#    - SHAP arka planı için rastgele 100 örnek al
-background = X_train_df.sample(n=100, random_state=42)
+X_tr_df = pd.DataFrame(X_tr_scaled, columns=feature_names)
+X_te_df = pd.DataFrame(X_te_scaled, columns=feature_names)
 
-#    - Sadece "recidivism=1" olasılığını verecek fonksiyon
-f_proba1 = lambda x: best_mlp.predict_proba(x)[:, 1]
+background = X_tr_df.sample(100, random_state=42)
+f_high = lambda x: best.named_steps["clf"].predict_proba(x)[:, 2]
 
-explainer = shap.KernelExplainer(f_proba1, background, link="logit")
-#    - nsamples parametresi ile hesaplamayı hızlandırabiliriz
-shap_values = explainer.shap_values(X_test_df, nsamples=100)
+explainer = shap.KernelExplainer(f_high, background, link="logit")
+shap_values = explainer.shap_values(X_te_df, nsamples=100)
 
-#    - Özet grafiği
-shap.summary_plot(shap_values, X_test_df)
+# SHAP summary plot
+shap.summary_plot(shap_values, X_te_df)

@@ -1,85 +1,81 @@
-import numpy as np
+# ---------- RANDOM FOREST SÜRÜMÜ ----------
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import RFE
+from imblearn.pipeline import Pipeline
 from imblearn.over_sampling import SMOTE
-from sklearn.linear_model import LogisticRegression
+import shap
 
+# 1) Veriyi oku
+data = pd.read_csv("mock_compas_data_weighted_full.csv")
+print("Risk level dağılımı:\n", data["recidivism"].value_counts(), "\n")
 
-# 1. Veriyi oku
-df = pd.read_csv("mock_compas_data_weighted_full.csv")
+# 2) Özellikler / hedef
+X = data.drop(columns=["recidivism"])
+y = data["recidivism"]
 
-# 2. Bağımlı ve bağımsız değişkenleri ayır
-X = df.drop(columns=["recidivism"])
-y = df["recidivism"]
-
-# 3. One-hot encoding
+# 3) One-hot encoding
 X = pd.get_dummies(X, drop_first=True)
 
-# 4. SMOTE ile veri dengele
-X_res, y_res = SMOTE(random_state=42).fit_resample(X, y)
-print(f"\nSMOTE sonrası sınıf dağılımı:\n{pd.Series(y_res).value_counts()}")
-
-# 5. RFE ile en önemli 20 özelliği seç
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X_res)
-log_reg = LogisticRegression(max_iter=1000)
-rfe = RFE(log_reg, n_features_to_select=20)
-rfe.fit(X_scaled, y_res)
-selected_features = X.columns[rfe.support_]
-print(f"\nRFE ile seçilen en önemli 20 özellik:\n{selected_features.tolist()}")
-
-# 6. Eğitim ve test seti
+# 4) Train/Test split
 X_train, X_test, y_train, y_test = train_test_split(
-    X_res[selected_features], y_res, test_size=0.2, random_state=42
+    X, y, test_size=0.2, stratify=y, random_state=42
 )
 
-# 7. GridSearchCV ile hiperparametre optimizasyonu
-param_grid = {
-    'n_estimators': [100, 200],
-    'max_depth': [4, 6, 8, None],
-    'min_samples_split': [2, 5],
-    'min_samples_leaf': [1, 2]
+# 5) Pipeline: SMOTE ➔ RandomForest
+pipeline_rf = Pipeline([
+    ("smote", SMOTE(random_state=42)),
+    ("clf", RandomForestClassifier(random_state=42))
+])
+
+# 6) GridSearch hiperparametreleri
+param_grid_rf = {
+    "clf__n_estimators": [100, 200, 500],
+    "clf__max_depth": [None, 6, 10],
+    "clf__min_samples_split": [2, 5],
+    "clf__min_samples_leaf": [1, 2]
 }
 
-grid_search = GridSearchCV(
-    estimator=RandomForestClassifier(random_state=42),
-    param_grid=param_grid,
-    scoring='roc_auc',
+grid_rf = GridSearchCV(
+    estimator=pipeline_rf,
+    param_grid=param_grid_rf,
+    scoring="accuracy",
     cv=5,
-    n_jobs=-1
+    n_jobs=-1,
+    verbose=1
 )
-grid_search.fit(X_train, y_train)
 
-print("En iyi parametreler:", grid_search.best_params_)
-print("En iyi AUC (CV):", grid_search.best_score_)
+# 7) Eğit
+grid_rf.fit(X_train, y_train)
+print("RF en iyi parametreler:", grid_rf.best_params_)
+print("RF en iyi CV doğruluk:", grid_rf.best_score_)
 
-# 8. En iyi modeli kullan
-best_rf = grid_search.best_estimator_
+# 8) Test değerlendirme
+best_rf = grid_rf.best_estimator_
+y_pred_rf  = best_rf.predict(X_test)
+y_proba_rf = best_rf.predict_proba(X_test)
 
-# 9. Tahminler
-y_pred = best_rf.predict(X_test)
-y_proba = best_rf.predict_proba(X_test)[:, 1]
+print("\nConfusion Matrix (RF):\n", confusion_matrix(y_test, y_pred_rf))
+print("\nClassification Report (RF):\n", classification_report(y_test, y_pred_rf))
+auc_rf = roc_auc_score(pd.get_dummies(y_test), y_proba_rf, multi_class="ovr", average="macro")
+print("Test AUC (RF, macro OVR):", auc_rf)
 
-# 10. Değerlendirme
-print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("\nClassification Report:\n", classification_report(y_test, y_pred))
-print("AUC Score:", roc_auc_score(y_test, y_proba))
+# 9) Class=2 için ROC eğrisi
+fpr_rf, tpr_rf, _ = roc_curve((y_test==2).astype(int), y_proba_rf[:,2])
+plt.figure(figsize=(7,5))
+plt.plot(fpr_rf, tpr_rf, label=f"RF High Risk vs Rest (AUC={roc_auc_score((y_test==2).astype(int), y_proba_rf[:,2]):.2f})")
+plt.plot([0,1],[0,1],"--", color="gray")
+plt.xlabel("False Positive Rate"); plt.ylabel("True Positive Rate")
+plt.title("ROC - Random Forest (Class=2)")
+plt.legend(); plt.grid(); plt.tight_layout(); plt.show()
 
-# 11. ROC Eğrisi
-fpr, tpr, _ = roc_curve(y_test, y_proba)
-plt.figure(figsize=(8, 6))
-plt.plot(fpr, tpr, label=f"ROC Curve (AUC = {roc_auc_score(y_test, y_proba):.2f})")
-plt.plot([0, 1], [0, 1], linestyle='--', color='gray')
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.title("ROC Curve - Random Forest")
-plt.legend(loc="lower right")
-plt.grid()
-plt.tight_layout()
-plt.show()
+# 10) SHAP açıklayıcılığı
+#    (TreeExplainer RF için gayet hızlı)
+explainer_rf = shap.TreeExplainer(best_rf.named_steps["clf"])
+shap_vals_rf = explainer_rf.shap_values(best_rf.named_steps["smote"].fit_resample(X_train,y_train)[0])
+shap.summary_plot(shap_vals_rf, X_test, plot_type="bar", max_display=20)
+shap.summary_plot(shap_vals_rf, X_test, max_display=20)

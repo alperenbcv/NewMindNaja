@@ -1,183 +1,191 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split, GridSearchCV, learning_curve
+from sklearn.metrics import classification_report, roc_auc_score, roc_curve
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.base import clone
+from imblearn.pipeline import Pipeline
+from imblearn.over_sampling import SMOTE
 
 # -------------------------------
-# Kategoriler ve dağılımlar
+# 1) SENTETİK VERİ ÜRETİMİ
 # -------------------------------
-genders = ["Male", "Female"]
-gender_probs = [0.916, 0.084]
+def generate_mock_data(seed=42, n_samples=3000):
+    np.random.seed(seed)
+    genders = ["Male","Female"]; gender_p=[0.916,0.084]
+    races = ["Turk","Kurd","Arab","Other"]; race_p=[0.75,0.15,0.05,0.05]
+    ed_lvls = ["Illiterate","Literate without schooling","Primary School","Middle School","High School","Bachelor’s Degree","Master/PhD"]
+    ed_p = [0.037,0.092,0.319,0.289,0.226,0.035,0.002]
+    maritals = ["Single","Married","Divorced"]; mar_p=[0.5,0.4,0.1]
+    emps = ["Employed","Unemployed","Student","Retired"]; emp_p=[0.4,0.3,0.15,0.15]
+    housings = ["Houseowner","Rent","Homeless"]; house_p=[0.4,0.55,0.05]
+    ages = ["12-14","15-17","18-24","25-34","35-44","45-54","55-64","65+"]
+    age_p=[0.0007,0.0083,0.1240,0.3716,0.2865,0.1442,0.0502,0.0145]
+    yesno=[True,False]
 
-races = ["Turk", "Kurd", "Arab", "Other"]
-race_probs = [0.75, 0.15, 0.05, 0.05]
+    housing_w = {"Houseowner":0.9,"Rent":1.0,"Homeless":2}
+    gender_w  = {"Male":1.0,"Female":0.7}
+    race_w    = {"Turk":1.0,"Kurd":1.1,"Arab":1.1,"Other":1.1}
+    ed_w      = {"Illiterate":1.5,"Literate without schooling":1.4,
+                 "Primary School":1.3,"Middle School":1.2,"High School":1.0,
+                 "Bachelor’s Degree":0.8,"Master/PhD":0.7}
+    age_w     = {"12-14":1.6,"15-17":1.5,"18-24":1.3,"25-34":1.2,
+                 "35-44":1.0,"45-54":0.9,"55-64":0.8,"65+":0.6}
+    marital_w = {"Single":1.0,"Married":0.95,"Divorced":1.2}
+    emp_w     = {"Employed":0.9,"Unemployed":1.2,"Student":1.0,"Retired":0.7}
+    base_rate = 0.3
 
-education_levels = [
-    "Illiterate", "Literate without schooling", "Primary School",
-    "Middle School", "High School", "Bachelor’s Degree", "Master/PhD"
-]
-education_probs = [
-    0.037, 0.092, 0.319, 0.289, 0.226, 0.035, 0.002
-]
+    df = pd.DataFrame({
+        "age_group": np.random.choice(ages, n_samples, p=age_p),
+        "gender":    np.random.choice(genders, n_samples, p=gender_p),
+        "race_ethnicity": np.random.choice(races, n_samples, p=race_p),
+        "education_level": np.random.choice(ed_lvls, n_samples, p=ed_p),
+        "marital_status":  np.random.choice(maritals, n_samples, p=mar_p),
+        "employment_status": np.random.choice(emps, n_samples, p=emp_p),
+        "housing_status":   np.random.choice(housings, n_samples, p=house_p),
+        "has_dependents":   np.random.choice(yesno, n_samples, p=[0.6,0.4]),
+        "prior_convictions":      np.random.poisson(3, n_samples),
+        "juvenile_convictions":   np.random.poisson(1.5, n_samples),
+        "prior_probation_violation": np.random.choice(yesno, n_samples, p=[0.3,0.7]),
+        "prior_incarceration":       np.random.choice(yesno, n_samples, p=[0.4,0.6]),
+        "substance_abuse_history":   np.random.choice(yesno, n_samples, p=[0.3,0.7]),
+        "mental_health_issues":      np.random.choice(yesno, n_samples, p=[0.25,0.75]),
+        "gang_affiliation":          np.random.choice(yesno, n_samples, p=[0.03,0.97]),
+        "aggression_history":        np.random.choice(yesno, n_samples, p=[0.3,0.7]),
+        "compliance_history":        np.random.choice(yesno, n_samples, p=[0.2,0.8]),
+        "motivation_to_change":      np.random.choice(yesno, n_samples, p=[0.6,0.4]),
+        "stable_employment_past":    np.random.choice(yesno, n_samples, p=[0.55,0.45]),
+        "positive_social_support":   np.random.choice(yesno, n_samples, p=[0.6,0.4])
+    })
 
-marital_statuses = ["Single", "Married", "Divorced"]
-marital_probs = [0.5, 0.4, 0.1]
+    def calc_prob(r):
+        w = (housing_w[r.housing_status]*gender_w[r.gender]*race_w[r.race_ethnicity]*
+             ed_w[r.education_level]*age_w[r.age_group]*marital_w[r.marital_status]*emp_w[r.employment_status])
+        w *= (1+0.05*r.prior_convictions)*(1+0.07*r.juvenile_convictions)
+        w *= 1.2 if r.prior_probation_violation else 1.0
+        w *= 1.2 if r.prior_incarceration else 0.9
+        w *= 1.2 if r.substance_abuse_history else 0.9
+        w *= 1.2 if r.mental_health_issues else 1.0
+        w *= 1.3 if r.gang_affiliation else 1.0
+        w *= 1.2 if r.aggression_history else 0.9
+        w *= 0.9 if r.motivation_to_change else 1.0
+        w *= 1.2 if not r.compliance_history else 1.0
+        w *= 0.9 if r.stable_employment_past else 1.1
+        w *= 0.9 if r.positive_social_support else 1.1
+        w *= 0.9 if r.has_dependents else 1.1
+        return min(base_rate * w, 1.0)
 
-employment_statuses = ["Employed", "Unemployed", "Student", "Retired"]
-employment_probs = [0.4, 0.3, 0.15, 0.15]
+    df["recidivism_prob"] = df.apply(calc_prob, axis=1)
 
-housing_statuses = ["Houseowner", "Rent", "Homeless"]
-housing_probs = [0.4, 0.55, 0.05]
+    def assign_cls(p):
+        th = [0.45, 0.7]
+        if p < th[0]:
+            return np.random.choice([0,1], p=[0.9,0.1])
+        elif p < th[1]:
+            return np.random.choice([1,2], p=[0.8,0.2])
+        else:
+            return np.random.choice([2,1], p=[0.85,0.15])
 
-age_groups = ["12-14", "15-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"]
-age_probs = [0.0007, 0.0083, 0.1240, 0.3716, 0.2865, 0.1442, 0.0502, 0.0145]
+    df["recidivism"] = df["recidivism_prob"].apply(assign_cls)
+    return df.drop(columns="recidivism_prob")
 
-yes_no = [True, False]
-
-# -------------------------------
-# Ağırlıklar
-# -------------------------------
-housing_recidivism_weight = {
-    "Houseowner": 0.9,
-    "Rent": 1.0,
-    "Homeless": 2
-}
-
-gender_recidivism_weight = {
-    "Male": 1.0,
-    "Female": 0.7
-}
-
-race_recidivism_weight = {
-    "Turk": 1.0,
-    "Kurd": 1.1,
-    "Arab": 1.1,
-    "Other": 1.1
-}
-
-education_recidivism_weight = {
-    "Illiterate": 1.5,
-    "Literate without schooling": 1.4,
-    "Primary School": 1.3,
-    "Middle School": 1.2,
-    "High School": 1.0,
-    "Bachelor’s Degree": 0.8,
-    "Master/PhD": 0.7
-}
-
-age_recidivism_weight = {
-    "12-14": 1.6,
-    "15-17": 1.5,
-    "18-24": 1.3,
-    "25-34": 1.2,
-    "35-44": 1.0,
-    "45-54": 0.9,
-    "55-64": 0.8,
-    "65+": 0.6
-}
-
-marital_status_weight = {
-    "Single": 1.0,
-    "Married": 0.95,
-    "Divorced": 1.2
-}
-
-employment_status_weight = {
-    "Employed": 0.9,
-    "Unemployed": 1.2,
-    "Student": 1,
-    "Retired": 0.7
-}
-
-base_recidivism_rate = 0.3
-
-# -------------------------------
 # Veri üretimi
-# -------------------------------
-n_samples = 3000
-np.random.seed(42)
+data = generate_mock_data(seed=42)
+holdout = generate_mock_data(seed=1234, n_samples=1000)
 
-mock_data = pd.DataFrame({
-    "age_group": np.random.choice(age_groups, n_samples, p=age_probs),
-    "gender": np.random.choice(genders, n_samples, p=gender_probs),
-    "race_ethnicity": np.random.choice(races, n_samples, p=race_probs),
-    "education_level": np.random.choice(education_levels, n_samples, p=education_probs),
-    "marital_status": np.random.choice(marital_statuses, n_samples, p=marital_probs),
-    "employment_status": np.random.choice(employment_statuses, n_samples, p=employment_probs),
-    "housing_status": np.random.choice(housing_statuses, n_samples, p=housing_probs),
-    "has_dependents": np.random.choice(yes_no, n_samples, p=[0.6, 0.4]),
-    "prior_convictions": np.random.poisson(3, n_samples),
-    "juvenile_convictions": np.random.poisson(1.5, n_samples),
-    "prior_violent_offenses": np.random.poisson(0.4, n_samples),
-    "prior_probation_violation": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
-    "prior_incarceration": np.random.choice(yes_no, n_samples, p=[0.4, 0.6]),
-    "mental_health_issues": np.random.choice(yes_no, n_samples, p=[0.25, 0.75]),
-    "substance_abuse_history": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
-    "gang_affiliation": np.random.choice(yes_no, n_samples, p=[0.03, 0.97]),
-    "aggression_history": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
-    "compliance_history": np.random.choice(yes_no, n_samples, p=[0.2, 0.8]),
-    "motivation_to_change": np.random.choice(yes_no, n_samples, p=[0.6, 0.4]),
-    "stable_employment_past": np.random.choice(yes_no, n_samples, p=[0.55, 0.45]),
-    "positive_social_support": np.random.choice(yes_no, n_samples, p=[0.6, 0.4])
-})
+# One-hot encoding
+X = pd.get_dummies(data.drop(columns="recidivism"), drop_first=True)
+y = data["recidivism"]
+X_hold = pd.get_dummies(holdout.drop(columns="recidivism"), drop_first=True)
+y_hold = holdout["recidivism"]
+X_hold = X_hold.reindex(columns=X.columns, fill_value=0)
 
-# -------------------------------
-# Recidivism hesaplama
-# -------------------------------
+# Train/test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, stratify=y, test_size=0.2, random_state=42
+)
 
-def calculate_recidivism(row):
-    housing_weight = housing_recidivism_weight.get(row["housing_status"], 1.0)
-    gender_weight = gender_recidivism_weight.get(row["gender"], 1.0)
-    race_weight = race_recidivism_weight.get(row["race_ethnicity"], 1.0)
-    education_weight = education_recidivism_weight.get(row["education_level"], 1.0)
-    age_weight = age_recidivism_weight.get(row["age_group"], 1.0)
-    marital_weight = marital_status_weight.get(row["marital_status"], 1.0)
-    employment_weight = employment_status_weight.get(row["employment_status"], 1.0)
-    prior_offenses_factor = 1 + (row["prior_convictions"] * 0.05)
-    juvenile_offenses_factor = 1 + (row["juvenile_convictions"] * 0.07)
-    probation_violation_factor = 1.2 if row["prior_probation_violation"] else 1.0
-    incarceration_factor = 1.2 if row["prior_incarceration"] else 0.9
-    substance_abuse_factor = 1.2 if row["substance_abuse_history"] else 0.9
-    mental_health_factor = 1.2 if row["mental_health_issues"] else 1.0
-    gang_affiliation_factor = 1.3 if row["gang_affiliation"] else 1.0
-    aggression_factor = 1.2 if row["aggression_history"] else 0.9
-    motivation_factor = 0.9 if row["motivation_to_change"] else 1.0
-    compliance_factor = 1.2 if not row["compliance_history"] else 1.0
-    stable_employment_factor = 0.9 if row["stable_employment_past"] else 1.1
-    positive_social_support_factor = 0.9 if row["positive_social_support"] else 1.1
-    dependents_factor = 0.9 if row["has_dependents"] else 1.1
+# SMOTE uygulanıyor
+smote = SMOTE(random_state=42)
+X_train_bal, y_train_bal = smote.fit_resample(X_train, y_train)
 
-    combined_weight = (housing_weight * gender_weight * race_weight * education_weight *
-                       age_weight * marital_weight * employment_weight)
-    combined_weight *= (prior_offenses_factor * juvenile_offenses_factor * probation_violation_factor *
-                        incarceration_factor * substance_abuse_factor * mental_health_factor *
-                        gang_affiliation_factor * aggression_factor * motivation_factor *
-                        compliance_factor * stable_employment_factor *
-                        positive_social_support_factor * dependents_factor)
+# Pipeline (SMOTE yok çünkü zaten uygulandı)
+pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("clf", MLPClassifier(random_state=42, early_stopping=True))
+])
 
-    personal_recidivism_probability = base_recidivism_rate * combined_weight
-    personal_recidivism_probability = min(personal_recidivism_probability, 1.0)
+param_grid = {
+    "clf__hidden_layer_sizes": [(50, 50), (100,), (200,)],
+    "clf__activation": ["tanh", "relu"],
+    "clf__alpha": [1e-4, 1e-3, 1e-2],
+    "clf__learning_rate_init": [1e-3, 1e-2],
+    "clf__max_iter": [1000]
+}
 
-    return int(np.random.rand() < personal_recidivism_probability)
+grid = GridSearchCV(pipe, param_grid, cv=5, scoring="accuracy", verbose=1, n_jobs=-1)
+grid.fit(X_train_bal, y_train_bal)
 
-mock_data["recidivism"] = mock_data.apply(calculate_recidivism, axis=1)
+print(">> En iyi parametreler:", grid.best_params_)
+best_model = grid.best_estimator_
+
+# Değerlendirme fonksiyonu
+def eval_model(m, Xv, yv, name):
+    y_pred = m.predict(Xv)
+    y_pr = m.predict_proba(Xv)
+    print(f"\n--- {name} classification report ---")
+    print(classification_report(yv, y_pred))
+    print(f"AUC (macro OVR): {roc_auc_score(pd.get_dummies(yv), y_pr, multi_class='ovr', average='macro'):.3f}")
+
+eval_model(best_model, X_test, y_test, "Test Set")
+eval_model(best_model, X_hold, y_hold, "Hold-Out Set")
 
 # -------------------------------
-# Sample Weight (kritik azınlık gruplar için)
+# 6) SHUFFLE ETİKET DENEYİ (memorization kontrolü)
 # -------------------------------
-def assign_sample_weight(row):
-    weight = 1.0
-    if row["age_group"] == "12-14":
-        weight *= 10
-    if row["education_level"] == "Master/PhD":
-        weight *= 5
-    if row["housing_status"] == "Homeless":
-        weight *= 3
-    return weight
+# Eğitim etiketlerini karıştıralım
+y_train_shuffled = y_train.sample(frac=1.0, random_state=42).reset_index(drop=True)
+X_train_shuf     = X_train.reset_index(drop=True)
 
-mock_data["sample_weight"] = mock_data.apply(assign_sample_weight, axis=1)
+# best_model'ı klonlayıp shuffle edilmiş etiketle yeniden eğit
+pipe_shuf = clone(best_model)
+pipe_shuf.fit(X_train_shuf, y_train_shuffled)
+
+eval_model(pipe_shuf, X_test, y_test, "Test (Shuffle Etiket)")
+eval_model(pipe_shuf, X_hold, y_hold, "Hold-Out (Shuffle Etiket)")
 
 # -------------------------------
-# Kaydet
+# 7) LEARNING CURVE
 # -------------------------------
-mock_data.to_csv("mock_compas_data_weighted_full.csv", index=False)
+train_sizes, train_scores, val_scores = learning_curve(
+    best_model, X_train, y_train,
+    train_sizes=np.linspace(0.1,1.0,10),
+    cv=5, scoring="accuracy", n_jobs=-1
+)
+train_mean = np.mean(train_scores, axis=1)
+val_mean   = np.mean(val_scores,   axis=1)
 
-print("Mock veri tüm 21 veri faktörü dahil edilerek başarıyla oluşturuldu!")
+plt.figure(figsize=(8,5))
+plt.plot(train_sizes, train_mean, label="Eğitim Skoru")
+plt.plot(train_sizes, val_mean,   label="Validasyon Skoru")
+plt.xlabel("Eğitim Seti Boyutu")
+plt.ylabel("Doğruluk")
+plt.title("Learning Curve")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+from sklearn.metrics import roc_curve
+
+def plot_roc(y_true, y_proba, class_id):
+    fpr, tpr, _ = roc_curve((y_true==class_id).astype(int), y_proba[:,class_id])
+    plt.plot(fpr, tpr, label=f"Class {class_id} (AUC={roc_auc_score((y_true==class_id).astype(int), y_proba[:,class_id]):.2f})")
+
+plt.figure(figsize=(7,5))
+for i in [0,1,2]: plot_roc(y_test, best_model.predict_proba(X_test), i)
+plt.plot([0,1],[0,1],"--",color="gray")
+plt.legend(); plt.title("ROC Curves per Class"); plt.grid(); plt.show()
