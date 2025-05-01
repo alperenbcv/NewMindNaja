@@ -25,7 +25,7 @@ employment_statuses = ["Employed", "Unemployed", "Student", "Retired"]
 employment_probs = [0.4, 0.3, 0.15, 0.15]
 
 housing_statuses = ["Houseowner", "Rent", "Homeless"]
-housing_probs = [0.5, 0.45, 0.05]
+housing_probs = [0.4, 0.55, 0.05]
 
 age_groups = ["12-14", "15-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"]
 age_probs = [0.0007, 0.0083, 0.1240, 0.3716, 0.2865, 0.1442, 0.0502, 0.0145]
@@ -37,13 +37,13 @@ yes_no = [True, False]
 # -------------------------------
 housing_recidivism_weight = {
     "Houseowner": 0.9,
-    "Rent": 1.1,
+    "Rent": 1.0,
     "Homeless": 2
 }
 
 gender_recidivism_weight = {
     "Male": 1.0,
-    "Female": 0.9
+    "Female": 0.7
 }
 
 race_recidivism_weight = {
@@ -64,9 +64,9 @@ education_recidivism_weight = {
 }
 
 age_recidivism_weight = {
-    "12-14": 1.8,
-    "15-17": 1.6,
-    "18-24": 1.5,
+    "12-14": 1.6,
+    "15-17": 1.5,
+    "18-24": 1.3,
     "25-34": 1.2,
     "35-44": 1.0,
     "45-54": 0.9,
@@ -76,8 +76,8 @@ age_recidivism_weight = {
 
 marital_status_weight = {
     "Single": 1.0,
-    "Married": 0.9,
-    "Divorced": 1.3
+    "Married": 0.95,
+    "Divorced": 1.2
 }
 
 employment_status_weight = {
@@ -87,12 +87,12 @@ employment_status_weight = {
     "Retired": 0.7
 }
 
-base_recidivism_rate = 0.45
+base_recidivism_rate = 0.3
 
 # -------------------------------
 # Veri üretimi
 # -------------------------------
-n_samples = 300
+n_samples = 3000
 np.random.seed(42)
 
 mock_data = pd.DataFrame({
@@ -103,20 +103,19 @@ mock_data = pd.DataFrame({
     "marital_status": np.random.choice(marital_statuses, n_samples, p=marital_probs),
     "employment_status": np.random.choice(employment_statuses, n_samples, p=employment_probs),
     "housing_status": np.random.choice(housing_statuses, n_samples, p=housing_probs),
-    "has_dependents": np.random.choice(yes_no, n_samples, p=[0.5, 0.5]),
-    "prior_convictions": np.random.poisson(1.5, n_samples),
+    "has_dependents": np.random.choice(yes_no, n_samples, p=[0.6, 0.4]),
+    "prior_convictions": np.random.poisson(1.8, n_samples),
     "juvenile_convictions": np.random.poisson(0.5, n_samples),
-    "prior_violent_offenses": np.random.poisson(0.5, n_samples),
+    "prior_violent_offenses": np.random.poisson(0.4, n_samples),
     "prior_probation_violation": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
     "prior_incarceration": np.random.choice(yes_no, n_samples, p=[0.4, 0.6]),
-    "mental_health_issues": np.random.choice(yes_no, n_samples, p=[0.1, 0.9]),
-    "substance_abuse_history": np.random.choice(yes_no, n_samples, p=[0.1, 0.9]),
-    "gang_affiliation": np.random.choice(yes_no, n_samples, p=[0.05, 0.95]),
+    "mental_health_issues": np.random.choice(yes_no, n_samples, p=[0.25, 0.75]),
+    "substance_abuse_history": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
+    "gang_affiliation": np.random.choice(yes_no, n_samples, p=[0.03, 0.97]),
     "aggression_history": np.random.choice(yes_no, n_samples, p=[0.3, 0.7]),
     "compliance_history": np.random.choice(yes_no, n_samples, p=[0.2, 0.8]),
-    "motivation_to_change": np.random.choice(yes_no, n_samples, p=[0.7, 0.3]),
-    "stable_employment_past": np.random.choice(yes_no, n_samples, p=[0.6, 0.4]),
-    "stable_residence_past": np.random.choice(yes_no, n_samples, p=[0.7, 0.3]),
+    "motivation_to_change": np.random.choice(yes_no, n_samples, p=[0.6, 0.4]),
+    "stable_employment_past": np.random.choice(yes_no, n_samples, p=[0.55, 0.45]),
     "positive_social_support": np.random.choice(yes_no, n_samples, p=[0.6, 0.4])
 })
 
@@ -132,16 +131,17 @@ def calculate_recidivism(row):
     age_weight = age_recidivism_weight.get(row["age_group"], 1.0)
     marital_weight = marital_status_weight.get(row["marital_status"], 1.0)
     employment_weight = employment_status_weight.get(row["employment_status"], 1.0)
-    prior_offenses_factor = 1 + (row["prior_convictions"] * 0.05)
-    juvenile_offenses_factor = 1 + (row["juvenile_convictions"] * 0.06)
+    prior_offenses_factor = 1 + (row["prior_convictions"] * 0.03)
+    juvenile_offenses_factor = 1 + (row["juvenile_convictions"] * 0.05)
     probation_violation_factor = 1.2 if row["prior_probation_violation"] else 1.0
-    incarceration_factor = 1.2 if row["prior_incarceration"] else 1.0
-    substance_abuse_factor = 1.3 if row["substance_abuse_history"] else 1.0
+    incarceration_factor = 1.2 if row["prior_incarceration"] else 0.9
+    substance_abuse_factor = 1.2 if row["substance_abuse_history"] else 0.9
     mental_health_factor = 1.2 if row["mental_health_issues"] else 1.0
     gang_affiliation_factor = 1.3 if row["gang_affiliation"] else 1.0
-    aggression_factor = 1.2 if row["aggression_history"] else 1.0
+    aggression_factor = 1.2 if row["aggression_history"] else 0.9
     motivation_factor = 0.8 if row["motivation_to_change"] else 1.0
     compliance_factor = 1.2 if not row["compliance_history"] else 1.0
+    stable_employment_factor = 0.9 if row["stable_employment_past"] else 1.2
     positive_social_support_factor = 0.8 if row["positive_social_support"] else 1.2
     dependents_factor = 0.9 if row["has_dependents"] else 1.1
 
@@ -150,7 +150,7 @@ def calculate_recidivism(row):
     combined_weight *= (prior_offenses_factor * juvenile_offenses_factor * probation_violation_factor *
                         incarceration_factor * substance_abuse_factor * mental_health_factor *
                         gang_affiliation_factor * aggression_factor * motivation_factor *
-                        compliance_factor *
+                        compliance_factor * stable_employment_factor *
                         positive_social_support_factor * dependents_factor)
 
     personal_recidivism_probability = base_recidivism_rate * combined_weight
@@ -165,4 +165,4 @@ mock_data["recidivism"] = mock_data.apply(calculate_recidivism, axis=1)
 # -------------------------------
 mock_data.to_csv("mock_compas_data_weighted_full.csv", index=False)
 
-print("Mock veri tüm 22 veri faktörü dahil edilerek başarıyla oluşturuldu!")
+print("Mock veri tüm 21 veri faktörü dahil edilerek başarıyla oluşturuldu!")
