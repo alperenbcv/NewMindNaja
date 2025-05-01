@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
+import shap
 
 # 1. Veriyi oku
 df = pd.read_csv("mock_compas_data_weighted_full.csv")
@@ -18,10 +19,10 @@ X = df.drop(columns=["recidivism"])
 y = df["recidivism"]
 
 # 3. One-hot encoding
-X = pd.get_dummies(X)
+X = pd.get_dummies(X, drop_first=True)
 
 # 4. SMOTE ile veri dengele
-print(f"Orijinal sınıf dağılımı:\n{y.value_counts()}")
+#print(f"Orijinal sınıf dağılımı:\n{y.value_counts()}")
 X_res, y_res = SMOTE(random_state=42).fit_resample(X, y)
 print(f"\nSMOTE sonrası sınıf dağılımı:\n{pd.Series(y_res).value_counts()}")
 
@@ -30,7 +31,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2,
 
 # 6. XGBoost eğit
 xgb_model = XGBClassifier(eval_metric='logloss', random_state=42, use_label_encoder=False)
-xgb_model.fit(X_train, y_train)
+xgb_model.fit(X_train, y_train);
 
 # 7. Feature Importance
 importances = xgb_model.feature_importances_
@@ -64,19 +65,32 @@ best_model = XGBClassifier(n_estimators=100, max_depth=6, learning_rate=0.1,
 best_model.fit(X_train_sel, y_train_sel)
 y_proba = best_model.predict_proba(X_test_sel)[:, 1]
 
-# 11. F1 skoru için en iyi threshold'u bul
-precisions, recalls, thresholds = precision_recall_curve(y_test_sel, y_proba)
-f1_scores = 2 * (precisions * recalls) / (precisions + recalls + 1e-8)
-best_thresh = thresholds[np.argmax(f1_scores)]
-print(f"\nF1'e g\u00f6re en iyi threshold: {best_thresh:.2f}")
+# ROC curve ile FPR, TPR ve thresholdları al
+fpr, tpr, thresholds = roc_curve(y_test_sel, y_proba)
 
-# 12. Tahmin yap ve değerlendir
-y_pred = (y_proba > best_thresh).astype(int)
-print(f"\n--- Threshold = {best_thresh:.2f} ---")
-print(classification_report(y_test_sel, y_pred))
+# Youden's J hesapla
+youden_j = tpr - fpr
+best_j_index = np.argmax(youden_j)
+best_thresh_youden = thresholds[best_j_index]
+
+print(f"Youden Index'e göre en iyi threshold: {best_thresh_youden:.2f}")
+
+# Tahmin ve değerlendirme
+y_pred_youden = (y_proba > best_thresh_youden).astype(int)
+print(f"\n--- Youden Threshold = {best_thresh_youden:.2f} ---")
+print(classification_report(y_test_sel, y_pred_youden))
 print("Confusion Matrix:")
-print(confusion_matrix(y_test_sel, y_pred))
+print(confusion_matrix(y_test_sel, y_pred_youden))
 
+# SHAP için TreeExplainer kullan (XGBoost modeline göre)
+explainer = shap.TreeExplainer(best_model)  # Örn: XGBoost modelin burada best_model
+shap_values = explainer.shap_values(X_test_sel)
+
+# SHAP Summary Plot (Özelliklerin önem sıralaması ve etkisi)
+shap.summary_plot(shap_values, X_test_sel, plot_type="bar", max_display=20)
+
+# SHAP Detailed Summary (etki yönüyle birlikte dağılım)
+shap.summary_plot(shap_values, X_test_sel, max_display=20)
 # 13. ROC Curve çiz
 fpr, tpr, _ = roc_curve(y_test_sel, y_proba)
 auc = roc_auc_score(y_test_sel, y_proba)
