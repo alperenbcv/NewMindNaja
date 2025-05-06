@@ -17,7 +17,7 @@ def generate_mock_data(seed=42, n_samples=3000):
     housings = ["Houseowner","Rent","Homeless"]; house_p = [1/3]*3
     yesno = [True, False]
 
-    # Ağırlıklar (özellikle yaş grubunu büyüttük)
+    # Ağırlıklar
     age_w = {
         "12-14":2.0, "15-17":1.8, "18-24":1.5, "25-34":1.2,
         "35-44":1.0, "45-54":0.8, "55-64":0.6, "65+":0.4
@@ -59,7 +59,7 @@ def generate_mock_data(seed=42, n_samples=3000):
 
     # Recidivism olasılığı (log-odds → sigmoid)
     def calc_prob(r):
-        s = -2.7
+        s = -2.6
         s += np.log(age_w[r.age_group])
         s += np.log(gender_w[r.gender])
         s += np.log(race_w[r.race_ethnicity])
@@ -87,11 +87,11 @@ def generate_mock_data(seed=42, n_samples=3000):
     def assign_cls(p):
         # %5 ihtimalle komşu sınıfa geçiş
         if p < 0.45:
-            return np.random.choice([0, 1], p=[0.95, 0.05])
+            return np.random.choice([0, 1], p=[0.90, 0.1])
         elif p < 0.7:
             return np.random.choice([1, 0, 2], p=[0.90, 0.05, 0.05])
         else:
-            return np.random.choice([2, 1], p=[0.95, 0.05])
+            return np.random.choice([2, 1], p=[0.90, 0.1])
 
     df["recidivism"] = df["recidivism_prob"].apply(assign_cls)
     return df.drop(columns="recidivism_prob")
