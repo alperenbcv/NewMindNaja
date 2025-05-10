@@ -1,11 +1,11 @@
 personId,name,age,gender,education
-1,Ali Yılmaz,60,Female,High School
-2,Ayşe Demir,63,Male,Primary
-3,Mehmet Kaya,47,Female,Primary
-4,Zeynep Şahin,61,Male,PhD
-5,Ahmet Kurt,38,Female,Master
-6,Elif Koç,65,Male,Primary
-7,Mustafa Aydın,57,Female,Master
-8,Fatma Yüce,62,Male,PhD
-9,Burak Can,24,Female,Master
-10,Derya Öz,54,Male,Master
+1,Ali Yılmaz,52,Male,High School
+2,Ayşe Demir,57,Female,Bachelor
+3,Mehmet Kaya,45,Male,PhD
+4,Zeynep Şahin,21,Female,Primary
+5,Ahmet Kurt,29,Male,High School
+6,Elif Koç,43,Female,PhD
+7,Mustafa Aydın,39,Male,Master
+8,Fatma Yüce,29,Female,High School
+9,Burak Can,47,Male,Master
+10,Derya Öz,65,Female,Master
