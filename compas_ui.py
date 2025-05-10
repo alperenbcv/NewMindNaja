@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Pipeline'ı yükle (içinde preproc+SMOTE+MLP var)
-model = joblib.load("recidivism_pipeline.pkl")
+model = joblib.load("recidivism_logreg_pipeline.pkl")
 
 st.title("Sanık Risk Tahmin Aracı")
 
