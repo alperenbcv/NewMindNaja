@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.special import expit  # sigmoid
 
-def generate_mock_data(seed=42, n_samples=3000):
+def generate_mock_data(seed=42, n_samples=4000):
     np.random.seed(seed)
 
     # Kategoriler & olasılıklar
@@ -59,7 +59,7 @@ def generate_mock_data(seed=42, n_samples=3000):
 
     # Recidivism olasılığı (log-odds → sigmoid)
     def calc_prob(r):
-        s = -2.6
+        s = -3.5
         s += np.log(age_w[r.age_group])
         s += np.log(gender_w[r.gender])
         s += np.log(race_w[r.race_ethnicity])
@@ -75,11 +75,34 @@ def generate_mock_data(seed=42, n_samples=3000):
         s += 0.4  if r.mental_health_issues else 0
         s += 0.8  if r.gang_affiliation else 0
         s += 0.5  if r.aggression_history else -0.3
-        s += -0.4 if r.motivation_to_change else 0
+        s += -0.3 if r.motivation_to_change else 0
         s += 0.5  if not r.compliance_history else 0
         s += -0.3 if r.stable_employment_past else 0.3
         s += -0.3 if r.positive_social_support else 0.3
         s += -0.2 if r.has_dependents else 0.2
+
+        # Etkileşimler (ek risk etkisi)
+        if r.age_group in ["12-14", "15-17"] and r.juvenile_convictions > 0:
+            s += 0.6
+        if r.substance_abuse_history and r.mental_health_issues:
+            s += 0.8
+        if r.prior_incarceration and r.prior_probation_violation:
+            s += 0.5
+        if r.gang_affiliation and r.aggression_history:
+            s += 0.7
+        if not r.stable_employment_past and r.education_level in ["Illiterate", "Primary School"]:
+            s += 0.5
+        if r.housing_status == "Homeless" and r.prior_convictions > 3:
+            s += 0.6
+        if not r.compliance_history and not r.motivation_to_change:
+            s += 0.4
+        if r.age_group == "18-24" and r.substance_abuse_history:
+            s += 0.5
+        if not r.positive_social_support and r.gang_affiliation:
+            s += 0.6
+        if r.mental_health_issues and r.prior_incarceration:
+            s += 0.5
+
         return float(expit(s))
 
     df["recidivism_prob"] = df.apply(calc_prob, axis=1)
