@@ -57,11 +57,11 @@ def train_and_evaluate():
 
     # 4) Hiperparametre arama
     param_grid = {
-        "clf__hidden_layer_sizes": [(50,50), (100,), (200,)],
-        "clf__activation": ["tanh","relu"],
-        "clf__alpha": [1e-2, 1e-3, 1e-4],
-        "clf__learning_rate_init": [1e-2, 1e-3],
-        "clf__max_iter": [500, 1000]
+        "clf__hidden_layer_sizes": [(200,)],
+        "clf__activation": ["tanh"],
+        "clf__alpha": [1e-3],
+        "clf__learning_rate_init": [1e-2],
+        "clf__max_iter": [500]
     }
     grid = GridSearchCV(
         pipe, param_grid, cv=5,
