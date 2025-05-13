@@ -2,49 +2,117 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Sanık Risk Tahmini", layout="wide")
-st.title("🧠 Sanık Risk Tahmin Aracı")
+st.set_page_config(page_title="Recidivism Risk Predictor", layout="wide")
+st.title("🧠 Recidivism Risk Prediction Tool")
+
 st.markdown("""
-Bu araç, bir sanığın yeniden suç işleme olasılığını tahmin eder. 
-Lütfen aşağıdaki bilgileri doldurun ve "Tahmin Et" butonuna basın.
+This tool estimates the likelihood of reoffending based on socio-demographic and behavioral data.
+Please fill out the form and click **Predict**.
 """)
 
-# Modeli yükle
 model = joblib.load("recidivism_xgb_pipeline.pkl")
+labels = {0: "🟢 Low Risk", 1: "🟡 Medium Risk", 2: "🔴 High Risk"}
 
-with st.form("input_form"):
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        age_group = st.selectbox("Yaş Grubu", ["12-14","15-17","18-24","25-34","35-44","45-54","55-64","65+"])
-        gender = st.selectbox("Cinsiyet", ["Male","Female"])
-        race_ethnicity = st.selectbox("Etnik Grup", ["Turk","Kurd","Arab","Other"])
-        education_level = st.selectbox("Eğitim Düzeyi", [
-            "Illiterate","Literate without schooling","Primary School",
-            "Middle School","High School","Bachelor’s Degree","Master/PhD"
-        ])
-        marital_status = st.selectbox("Medeni Hali", ["Single","Married","Divorced"])
-    with col2:
-        employment_status = st.selectbox("İstihdam Durumu", ["Employed","Unemployed","Student","Retired"])
-        housing_status = st.selectbox("Barınma Durumu", ["Houseowner","Rent","Homeless"])
-        has_dependents = st.checkbox("Bakmakla Yükümlü Var mı?", value=False)
-        prior_convictions = st.slider("Önceki Sabıka Sayısı", 0, 20, 0)
-        juvenile_convictions = st.slider("Çocuk Sabıka Sayısı", 0, 10, 0)
-    with col3:
-        prior_probation_violation = st.checkbox("Denetimli Serbestlik İhlali?", value=False)
-        prior_incarceration = st.checkbox("Hapsedilmiş mi?", value=False)
-        substance_abuse_history = st.checkbox("Madde Bağımlılığı?", value=False)
-        mental_health_issues = st.checkbox("Ruhsal Sağlık Sorunu?", value=False)
-        gang_affiliation = st.checkbox("Çete Bağlantısı?", value=False)
-        aggression_history = st.checkbox("Saldırganlık Geçmişi?", value=False)
-        compliance_history = st.checkbox("Kurallara Uyum?", value=False)
-        motivation_to_change = st.checkbox("Değişime Motivasyon?", value=False)
-        stable_employment_past = st.checkbox("İstikrarlı İş Geçmişi?", value=False)
-        positive_social_support = st.checkbox("Pozitif Sosyal Destek?", value=False)
+def get_confidence_message(p, pred):
+    if p >= 0.85:
+        return f"{labels[pred]} (✔️ High Confidence)"
+    elif p >= 0.6:
+        return f"{labels[pred]} (⚠️ Moderate Confidence)"
+    else:
+        return f"{labels[pred]} (❗ Low Confidence – Other classes are also possible)"
 
-    submitted = st.form_submit_button("🧮 Tahmin Et")
+def plot_probabilities(proba):
+    fig, ax = plt.subplots()
+    bars = ax.bar(labels.values(), proba, color=["green", "orange", "red"])
+    ax.set_ylim(0, 1)
+    ax.set_ylabel("Probability")
+    ax.set_title("Risk Probability Distribution")
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, yval + 0.01, f"{yval:.0%}", ha='center', va='bottom')
+    st.pyplot(fig)
 
-if submitted:
+# === Dynamic form logic ===
+col1, col2, col3 = st.columns(3)
+with col1:
+    age_group = st.selectbox("Age Group", ["12-14", "15-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"])
+    gender = st.selectbox("Gender", ["Male", "Female"])
+    race_ethnicity = st.selectbox("Ethnicity", ["Turk", "Other"])
+
+    if age_group == "12-14":
+        education_options = ["Illiterate", "Literate without schooling", "Primary School", "Middle School"]
+        marital_options = ["Single"]
+        employment_options = ["Student", "Employed"]
+    elif age_group == "15-17":
+        education_options = ["Illiterate", "Literate without schooling", "Primary School", "Middle School", "High School"]
+        marital_options = ["Single"]
+        employment_options = ["Student", "Employed"]
+    elif age_group in ["18-24", "25-34"]:
+        education_options = ["Illiterate", "Literate without schooling", "Primary School",
+                             "Middle School", "High School", "Bachelor’s Degree"]
+        marital_options = ["Single", "Married", "Divorced"]
+        employment_options = ["Student", "Employed", "Unemployed"]
+    else:
+        education_options = ["Illiterate", "Literate without schooling", "Primary School",
+                             "Middle School", "High School", "Bachelor’s Degree", "Master/PhD"]
+        marital_options = ["Single", "Married", "Divorced"]
+        employment_options = ["Employed", "Unemployed", "Student", "Retired"]
+
+    education_level = st.selectbox("Education Level", education_options, help="Highest level of education completed.")
+    marital_status = st.selectbox("Marital Status", marital_options, help="Current legal marital status.")
+
+with col2:
+    employment_status = st.selectbox("Employment Status", employment_options, help="Current work situation.")
+    housing_status = st.selectbox("Housing Status", ["Houseowner", "Rent", "Homeless"],
+                                  help="Current living situation.")
+
+    prior_convictions = st.slider("Number of Prior Convictions", 0, 20, 0,
+                                  help="Number of past criminal convictions (excluding juvenile).")
+    juvenile_convictions = st.slider("Number of Juvenile Convictions", 0, 10, 0,
+                                     help="Number of criminal convictions before adulthood.")
+
+with col3:
+    no_prior = (prior_convictions == 0 and juvenile_convictions == 0)
+    prior_probation_violation = st.checkbox(
+        "Probation Violation?", value=False, disabled=no_prior,
+        help="Has the individual violated any terms during probation or parole?"
+    )
+    prior_incarceration = st.checkbox(
+        "Has Been Incarcerated?", value=False, disabled=no_prior,
+        help="Has the individual ever served time in jail or prison?"
+    )
+    if no_prior:
+        st.caption("ℹ️ Usually, no prior convictions means no probation violation or incarceration.")
+
+    is_child = age_group == "12-14"
+    has_dependents = st.checkbox(
+        "Has Dependents?", value=False, disabled=is_child,
+        help="Responsible for supporting one or more dependents (e.g., children)."
+    )
+    if is_child:
+        st.caption("ℹ️ Individuals aged 12-14 are assumed not to have dependents.")
+
+    substance_abuse_history = st.checkbox("Substance Abuse History?", value=False,
+        help="History of problematic use of drugs or alcohol.")
+    mental_health_issues = st.checkbox("Mental Health Issues?", value=False,
+        help="Any diagnosed or suspected psychological disorder.")
+    gang_affiliation = st.checkbox("Gang Affiliation?", value=False,
+        help="Known connection to gang activity.")
+    aggression_history = st.checkbox("Aggression History?", value=False,
+        help="Past behavior involving physical violence or aggression.")
+    compliance_history = st.checkbox("Compliant with Rules?", value=False,
+        help="Known to follow supervision rules or conditions.")
+    motivation_to_change = st.checkbox("Motivated to Change?", value=False,
+        help="Has demonstrated desire to rehabilitate or improve behavior.")
+    stable_employment_past = st.checkbox("Stable Employment History?", value=False,
+        help="Has held consistent jobs in the past.")
+    positive_social_support = st.checkbox("Positive Social Support?", value=False,
+        help="Has healthy social connections that discourage crime.")
+
+# Submit button
+if st.button("🧮 Predict"):
     input_dict = {
         "age_group": age_group,
         "gender": gender,
@@ -72,16 +140,22 @@ if submitted:
     pred = model.predict(df_input)[0]
     proba = model.predict_proba(df_input)[0]
 
-    labels = {0: "🟢 Düşük Risk", 1: "🟡 Orta Risk", 2: "🔴 Yüksek Risk"}
-
     st.markdown("---")
-    st.subheader("🔍 Tahmin Sonucu")
-    st.write(f"**Risk Seviyesi:** {labels[pred]}")
+    st.subheader("🔍 Prediction Result")
+    st.write(f"**Risk Level:** {get_confidence_message(proba[pred], pred)}")
     st.progress(int(proba[pred] * 100))
 
-    st.markdown("#### 🔢 Tüm Sınıf Olasılıkları")
-    for i, p in enumerate(proba):
-        st.write(f"{labels[i]}: `{p:.2%}`")
+    with st.expander("📊 Show Class Probabilities"):
+        plot_probabilities(proba)
 
-    st.markdown("✅ Tahmin başarıyla tamamlandı.")
+    st.markdown("#### 📋 Interpretive Note")
+    if proba[2] > 0.4:
+        st.error("🔴 High likelihood of reoffending. Preventive intervention is strongly recommended.")
+    elif proba[1] > 0.4:
+        st.warning("🟡 Medium risk. Behavioral observation and support may help.")
+    elif proba[0] > 0.8:
+        st.success("🟢 Low risk. Still, periodic monitoring is advised.")
+    else:
+        st.info("ℹ️ Risk level is ambiguous. Consider gathering more data.")
 
+    st.markdown("✅ Prediction completed.")
