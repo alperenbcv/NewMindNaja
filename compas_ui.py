@@ -199,14 +199,36 @@ if st.session_state.step == 1:
 elif st.session_state.step == 2:
     st.header("Step 2: Crime Type")
     crime_type = st.selectbox("Select the committed crime", ["Intentional Killing (TCK 82)"])
-
     col1, col2 = st.columns(2)
     with col1:
         if st.button("⬅ Back"):
             st.session_state.step = 1
             st.rerun()
     with col2:
-        if st.button("Next: Aggravating Circumstances"):
+        if st.button("Next: Qualifying Cases"):
+            st.session_state.user_data["crime_type"] = crime_type
+            st.session_state.step = 3
+            st.rerun()
+elif st.session_state.step == 3:
+    st.header("Step 3: Qualifying Cases")
+    premeditated_murder = st.checkbox("Premeditated killing", value=False)
+    monstrous_feelings = st.checkbox("Killing with monstrous feelings or by inflicting torture", value=False)
+    killing_by_fire = st.checkbox("Killing by means of fire, flooding, destruction, sinking, bombing, or using nuclear, biological, or chemical weapons", value=False)
+    kin_murder = st.checkbox("Killing a lineal ascendant or descendant, spouse, ex-spouse, or sibling", value=False)
+    child_murder = st.checkbox("Killing a child or a person unable to defend themselves physically or mentally", value=False)
+    woman_murder = st.checkbox("Killing a woman", value=False)
+    public_duty_murder = st.checkbox("Killing due to the victim's performance of a public duty", value=False)
+    conceal_crime_murder = st.checkbox("Killing to conceal a crime, destroy evidence, facilitate its commission, or to avoid apprehension", value=False)
+    failure_murder = st.checkbox("Killing out of rage due to failure to commit another crime", value=False)
+    blood_feud = st.checkbox("Killing with a motive of blood feud", value=False)
+    tradition_murder = st.checkbox("Killing with a motive of tradition or custom", value=False)
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("⬅ Back"):
+            st.session_state.step = 1
+            st.rerun()
+    with col2:
+        if st.button("Next: Qualifying Cases"):
             st.session_state.user_data["crime_type"] = crime_type
             st.session_state.step = 3
             st.rerun()
