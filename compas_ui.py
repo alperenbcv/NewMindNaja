@@ -1,20 +1,13 @@
+from fractions import Fraction
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
 import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Recidivism Risk Predictor", layout="wide")
 st.title("🧠 Recidivism Risk Prediction Tool")
 
-if "step" not in st.session_state:
-    st.session_state.step = 1
-if "user_data" not in st.session_state:
-    st.session_state.user_data = {}
-
-model = joblib.load("recidivism_xgb_pipeline.pkl")
-labels = {0: "🟢 Low Risk", 1: "🟡 Medium Risk", 2: "🔴 High Risk"}
-
+# --- Utility Fonksiyonlar ---
 def get_confidence_message(p, pred):
     if p >= 0.85:
         return f"{labels[pred]} (✔️ High Confidence)"
@@ -25,7 +18,7 @@ def get_confidence_message(p, pred):
 
 def plot_probabilities(proba):
     fig, ax = plt.subplots()
-    bars = ax.bar(labels.values(), proba, color=["green", "orange", "red"])
+    bars = ax.bar(labels.values(), proba)
     ax.set_ylim(0, 1)
     ax.set_ylabel("Probability")
     ax.set_title("Risk Probability Distribution")
@@ -34,171 +27,200 @@ def plot_probabilities(proba):
         ax.text(bar.get_x() + bar.get_width()/2, yval + 0.01, f"{yval:.0%}", ha='center', va='bottom')
     st.pyplot(fig)
 
-# === Step Navigation ===
+def calculate_base_sentence(qualifiers, mitigations, risk_pred):
+    # Adım 1: Ağırlaştırıcılar varsa doğrudan 'Aggravated Life'
+    base_sentence = "Life Imprisonment"
+    if any(qualifiers.values()):
+        base_sentence = "Aggravated Life Imprisonment"
+
+    # Adım 2: Tam indirim durumları
+    if (mitigations.get("self_defense") or mitigations.get("state_necessity") or
+        (mitigations.get("minor_age") and mitigations.get("minor_age_group") == "Under 12") or
+        (mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "Under 15") or
+        mitigations.get("under_threat") or mitigations.get("under_drug") or
+        (mitigations.get("mental_illness") and mitigations.get("mental_level") == "Fully")):
+        base_sentence = "No Imprisonment"
+        return base_sentence
+
+    # Adım 3: Haksız tahrik indirimi
+    if mitigations.get("unjust_provocation"):
+        ratio_map = {"Mild": Fraction(1,4), "Moderate": Fraction(1,2), "Severe": Fraction(3,4)}
+        ratio = ratio_map.get(mitigations.get("provocation_level"), Fraction(0))
+        if base_sentence == "Aggravated Life Imprisonment":
+            if ratio == Fraction(1,4):
+                base_sentence = 24
+            elif ratio == Fraction(2,4):
+                base_sentence = 21
+            else :
+                base_sentence = 18
+        elif base_sentence == "Life Imprisonment":
+            if ratio == Fraction(1,4):
+                base_sentence = 18
+            elif ratio == Fraction(2,4):
+                base_sentence = 15
+            else :
+                base_sentence = 12
+        else :
+            base_sentence = base_sentence*(1-ratio)
+    # Adım 4: Küçük yaş / işitme-engel indirimi aralığı
+    if ((mitigations.get("minor_age") and mitigations.get("minor_age_group") == "12-14") or
+        (mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "15-17")):
+        if base_sentence == "Aggravated Life Imprisonment":
+            base_range = (12,15)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+        elif base_sentence == "Life Imprisonment":
+            base_range = (9,11)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+        else :
+            base_sentence = base_sentence/2
+            if base_sentence > 7 :
+                base_sentence = 7
+    elif ((mitigations.get("minor_age") and mitigations.get("minor_age_group") == "15-17") or
+          (mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "18-21")):
+        if base_sentence == "Aggravated Life Imprisonment":
+            base_range = (18,24)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+        elif base_sentence == "Life Imprisonment":
+            base_range = (12,15)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+        else :
+            base_sentence = (base_sentence*2)/3
+            if base_sentence > 12 :
+                base_sentence = 12
+    if mitigations.get("mental_illness") and mitigations.get("mental_level") == "Partially":
+        if base_sentence == "Aggravated Life Imprisonment":
+            base_sentence = 25
+        elif base_sentence == "Life Imprisonment":
+            base_sentence = 20
+        else :
+            base_sentence = risk_pred_mitigation_int(risk_pred, base_sentence)
+
+    return f"{base_sentence:.0% years}"
+
+def risk_pred_mitigation_tuple(risk_pred, base_range):
+    if risk_pred == 0:
+        base_sentence = base_range[0] * 2/3
+        return base_sentence
+    elif risk_pred == 1:
+        base_sentence = ((base_range[0] + base_range[1]) / 2) * 2/3
+        return base_sentence
+    else:
+        base_sentence = base_range[1] * 2/3
+        return base_sentence
+
+def risk_pred_mitigation_int(risk_pred,base_sentence):
+    if risk_pred == 0:
+        base_sentence = base_sentence * 5/6
+        return base_sentence
+    elif risk_pred == 1:
+        base_sentence = base_sentence * 7/8
+        return base_sentence
+    else :
+        base_sentence = base_sentence * 11/12
+        return base_sentence
+
+
+# --- Model ve Sabitler ---
+model = joblib.load("recidivism_xgb_pipeline.pkl")
+labels = {0: "🟢 Low Risk", 1: "🟡 Medium Risk", 2: "🔴 High Risk"}
+
+# --- Session State Başlatma ---
+if "step" not in st.session_state:
+    st.session_state.step = 1
+if "user_data" not in st.session_state:
+    st.session_state.user_data = {}
+
+# === STEP 1: Recidivism Risk Prediction ===
 if st.session_state.step == 1:
     st.markdown("""
-    This tool estimates the likelihood of reoffending based on socio-demographic and behavioral data.
-    Please fill out the form and click **Predict**.
+    Bu araç, sosyo-demografik ve davranışsal verilere dayanarak yeniden suç işleme olasılığını tahmin eder.
+    Lütfen formu doldurup **Predict** butonuna tıklayın.
     """)
-
     col1, col2, col3 = st.columns(3)
     with col1:
-        age_group = st.selectbox("Age Group", ["12-14", "15-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"])
-        gender = st.selectbox("Gender", ["Male", "Female"])
-        race_ethnicity = st.selectbox("Ethnicity", ["Turk", "Other"])
-
-        if age_group == "12-14":
+        age_group = st.selectbox("Age Group", ["12-14","15-17","18-24","25-34","35-44","45-54","55-64","65+"])
+        gender = st.selectbox("Gender", ["Male","Female"])
+        race_ethnicity = st.selectbox("Ethnicity", ["Turk","Other"])
+        # Dinamik seçimler…
+        if age_group in ["12-14","15-17"]:
             education_options = ["Illiterate", "Literate without schooling", "Primary School", "Middle School"]
             marital_options = ["Single"]
-            employment_options = ["Student", "Employed"]
-        elif age_group == "15-17":
-            education_options = ["Illiterate", "Literate without schooling", "Primary School", "Middle School", "High School"]
-            marital_options = ["Single"]
-            employment_options = ["Student", "Employed"]
-        elif age_group in ["18-24", "25-34"]:
-            education_options = ["Illiterate", "Literate without schooling", "Primary School",
-                                 "Middle School", "High School", "Bachelor’s Degree"]
-            marital_options = ["Single", "Married", "Divorced"]
-            employment_options = ["Student", "Employed", "Unemployed"]
+            employment_options = ["Student","Employed"]
+        elif age_group in ["18-24","25-34"]:
+            education_options = ["Illiterate","…","Bachelor’s Degree"]
+            marital_options = ["Single","Married","Divorced"]
+            employment_options = ["Student","Employed","Unemployed"]
         else:
-            education_options = ["Illiterate", "Literate without schooling", "Primary School",
-                                 "Middle School", "High School", "Bachelor’s Degree", "Master/PhD"]
-            marital_options = ["Single", "Married", "Divorced"]
-            employment_options = ["Employed", "Unemployed", "Student", "Retired"]
-
-        education_level = st.selectbox("Education Level", education_options, help="Highest level of education completed.")
-        marital_status = st.selectbox("Marital Status", marital_options, help="Current legal marital status.")
-
+            education_options = ["Illiterate","…","Master/PhD"]
+            marital_options = ["Single","Married","Divorced"]
+            employment_options = ["Employed","Unemployed","Student","Retired"]
+        education_level = st.selectbox("Education Level", education_options)
+        marital_status = st.selectbox("Marital Status", marital_options)
     with col2:
-        employment_status = st.selectbox("Employment Status", employment_options, help="Current work situation.")
-        housing_status = st.selectbox("Housing Status", ["Houseowner", "Rent", "Homeless"],
-                                      help="Current living situation.")
-
-        prior_convictions = st.slider("Number of Prior Convictions", 0, 20, 0,
-                                      help="Number of past criminal convictions (excluding juvenile).")
-        juvenile_convictions = st.slider("Number of Juvenile Convictions", 0, 10, 0,
-                                         help="Number of criminal convictions before adulthood.")
-
+        employment_status = st.selectbox("Employment Status", employment_options)
+        housing_status = st.selectbox("Housing Status", ["Houseowner","Rent","Homeless"])
+        prior_convictions = st.slider("Number of Prior Convictions", 0, 20, 0)
+        juvenile_convictions = st.slider("Number of Juvenile Convictions", 0, 10, 0)
     with col3:
         no_prior = (prior_convictions == 0 and juvenile_convictions == 0)
-        prior_probation_violation = st.checkbox(
-            "Probation Violation?", value=False, disabled=no_prior,
-            help="Has the individual violated any terms during probation or parole?"
-        )
-        prior_incarceration = st.checkbox(
-            "Has Been Incarcerated?", value=False, disabled=no_prior,
-            help="Has the individual ever served time in jail or prison?"
-        )
+        prior_probation_violation = st.checkbox("Probation Violation?", value=False, disabled=no_prior)
+        prior_incarceration = st.checkbox("Has Been Incarcerated?", value=False, disabled=no_prior)
         if no_prior:
-            st.caption("ℹ️ Usually, no prior convictions means no probation violation or incarceration.")
-
-        is_child = age_group == "12-14"
-        has_dependents = st.checkbox(
-            "Has Dependents?", value=False, disabled=is_child,
-            help="Responsible for supporting one or more dependents (e.g., children)."
-        )
+            st.caption("ℹ️ No prior convictions → violation/incarceration seçenekleri devre dışı.")
+        is_child = (age_group == "12-14")
+        has_dependents = st.checkbox("Has Dependents?", value=False, disabled=is_child)
         if is_child:
-            st.caption("ℹ️ Individuals aged 12-14 are assumed not to have dependents.")
-
-        substance_abuse_history = st.checkbox("Substance Abuse History?", value=False,
-            help="History of problematic use of drugs or alcohol.")
-        mental_health_issues = st.checkbox("Mental Health Issues?", value=False,
-            help="Any diagnosed or suspected psychological disorder.")
-        gang_affiliation = st.checkbox("Gang Affiliation?", value=False,
-            help="Known connection to gang activity.")
-        aggression_history = st.checkbox("Aggression History?", value=False,
-            help="Past behavior involving physical violence or aggression.")
-        compliance_history = st.checkbox("Compliant with Rules?", value=False,
-            help="Known to follow supervision rules or conditions.")
-        motivation_to_change = st.checkbox("Motivated to Change?", value=False,
-            help="Has demonstrated desire to rehabilitate or improve behavior.")
-        stable_employment_past = st.checkbox("Stable Employment History?", value=False,
-            help="Has held consistent jobs in the past.")
-        positive_social_support = st.checkbox("Positive Social Support?", value=False,
-            help="Has healthy social connections that discourage crime.")
-
+            st.caption("ℹ️ Yaş < 15 için dependents devre dışı.")
+        substance_abuse_history = st.checkbox("Substance Abuse History?")
+        mental_health_issues    = st.checkbox("Mental Health Issues?")
+        gang_affiliation        = st.checkbox("Gang Affiliation?")
+        aggression_history      = st.checkbox("Aggression History?")
+        compliance_history      = st.checkbox("Compliant with Rules?")
+        motivation_to_change    = st.checkbox("Motivated to Change?")
+        stable_employment_past  = st.checkbox("Stable Employment History?")
+        positive_social_support = st.checkbox("Positive Social Support?")
     if st.button("🧮 Predict"):
-        input_dict = {
-            "age_group": age_group,
-            "gender": gender,
-            "race_ethnicity": race_ethnicity,
-            "education_level": education_level,
-            "marital_status": marital_status,
-            "employment_status": employment_status,
-            "housing_status": housing_status,
-            "has_dependents": has_dependents,
-            "prior_convictions": prior_convictions,
+        df_input = pd.DataFrame([{
+            "age_group": age_group, "gender": gender, "race_ethnicity": race_ethnicity,
+            "education_level": education_level, "marital_status": marital_status,
+            "employment_status": employment_status, "housing_status": housing_status,
+            "has_dependents": has_dependents, "prior_convictions": prior_convictions,
             "juvenile_convictions": juvenile_convictions,
             "prior_probation_violation": prior_probation_violation,
             "prior_incarceration": prior_incarceration,
             "substance_abuse_history": substance_abuse_history,
             "mental_health_issues": mental_health_issues,
-            "gang_affiliation": gang_affiliation,
-            "aggression_history": aggression_history,
+            "gang_affiliation": gang_affiliation, "aggression_history": aggression_history,
             "compliance_history": compliance_history,
             "motivation_to_change": motivation_to_change,
             "stable_employment_past": stable_employment_past,
             "positive_social_support": positive_social_support
-        }
-
-        df_input = pd.DataFrame([input_dict])
+        }])
         pred = model.predict(df_input)[0]
         proba = model.predict_proba(df_input)[0]
-
         st.markdown("---")
         st.subheader("🔍 Prediction Result")
         st.write(f"**Risk Level:** {get_confidence_message(proba[pred], pred)}")
-        st.progress(int(proba[pred] * 100))
-
+        st.progress(int(proba[pred]*100))
         with st.expander("📊 Show Class Probabilities"):
             plot_probabilities(proba)
-
-        st.markdown("#### 📋 Interpretive Note")
-        if proba[2] > 0.4:
-            st.error("🔴 High likelihood of reoffending. Preventive intervention is strongly recommended.")
-        elif proba[1] > 0.4:
-            st.warning("🟡 Medium risk. Behavioral observation and support may help.")
-        elif proba[0] > 0.8:
-            st.success("🟢 Low risk. Still, periodic monitoring is advised.")
-        else:
-            st.info("ℹ️ Risk level is ambiguous. Consider gathering more data.")
-
-    if st.button("Next: Crime Type"):
-        input_dict = {
-            "age_group": age_group,
-            "gender": gender,
-            "race_ethnicity": race_ethnicity,
-            "education_level": education_level,
-            "marital_status": marital_status,
-            "employment_status": employment_status,
-            "housing_status": housing_status,
-            "has_dependents": has_dependents,
-            "prior_convictions": prior_convictions,
-            "juvenile_convictions": juvenile_convictions,
-            "prior_probation_violation": prior_probation_violation,
-            "prior_incarceration": prior_incarceration,
-            "substance_abuse_history": substance_abuse_history,
-            "mental_health_issues": mental_health_issues,
-            "gang_affiliation": gang_affiliation,
-            "aggression_history": aggression_history,
-            "compliance_history": compliance_history,
-            "motivation_to_change": motivation_to_change,
-            "stable_employment_past": stable_employment_past,
-            "positive_social_support": positive_social_support
-        }
-        df_input = pd.DataFrame([input_dict])
-        pred = model.predict(df_input)[0]
-        proba = model.predict_proba(df_input)[0]
-        st.session_state.user_data["recidivism_input"] = input_dict
-        st.session_state.user_data["risk_pred"] = int(pred)
-        st.session_state.user_data["risk_proba"] = proba.tolist()
+        st.session_state.user_data.update({
+            "recidivism_input": df_input.to_dict(orient="records")[0],
+            "risk_pred": int(pred),
+            "risk_proba": proba.tolist()
+        })
+    # Prediction yapılmadan Next butonunu kapatıyoruz
+    next_disabled = "risk_pred" not in st.session_state.user_data
+    if st.button("Next: Crime Type", disabled=next_disabled):
         st.session_state.step = 2
         st.rerun()
 
-# Step 2 - Crime Type
+# === STEP 2: Crime Type ===
 elif st.session_state.step == 2:
     st.header("Step 2: Crime Type")
     crime_type = st.selectbox("Select the committed crime", ["Intentional Killing (TCK 82)"])
+    st.session_state.user_data["crime_type"] = crime_type
+
     col1, col2 = st.columns(2)
     with col1:
         if st.button("⬅ Back"):
@@ -206,29 +228,174 @@ elif st.session_state.step == 2:
             st.rerun()
     with col2:
         if st.button("Next: Qualifying Cases"):
-            st.session_state.user_data["crime_type"] = crime_type
             st.session_state.step = 3
             st.rerun()
+
+# === STEP 3: Qualifying Cases ===
 elif st.session_state.step == 3:
     st.header("Step 3: Qualifying Cases")
-    premeditated_murder = st.checkbox("Premeditated killing", value=False)
-    monstrous_feelings = st.checkbox("Killing with monstrous feelings or by inflicting torture", value=False)
-    killing_by_fire = st.checkbox("Killing by means of fire, flooding, destruction, sinking, bombing, or using nuclear, biological, or chemical weapons", value=False)
-    kin_murder = st.checkbox("Killing a lineal ascendant or descendant, spouse, ex-spouse, or sibling", value=False)
-    child_murder = st.checkbox("Killing a child or a person unable to defend themselves physically or mentally", value=False)
-    woman_murder = st.checkbox("Killing a woman", value=False)
-    public_duty_murder = st.checkbox("Killing due to the victim's performance of a public duty", value=False)
-    conceal_crime_murder = st.checkbox("Killing to conceal a crime, destroy evidence, facilitate its commission, or to avoid apprehension", value=False)
-    failure_murder = st.checkbox("Killing out of rage due to failure to commit another crime", value=False)
-    blood_feud = st.checkbox("Killing with a motive of blood feud", value=False)
-    tradition_murder = st.checkbox("Killing with a motive of tradition or custom", value=False)
+
+    qualifiers = {
+        "premeditated_murder": st.checkbox("Premeditated killing", help="Planned in advance (TCK 82/a)"),
+        "monstrous_feelings": st.checkbox("Killing with monstrous feelings or torture", help="Extreme cruelty (TCK 82/b)"),
+        "killing_by_fire": st.checkbox("Killing by destructive means", help="e.g. bomb, flood, fire (TCK 82/c)"),
+        "kin_murder": st.checkbox("Killing close relatives", help="Spouse, sibling, child, etc. (TCK 82/d)"),
+        "child_murder": st.checkbox("Killing a child or defenseless person", help="Due to age or mental/physical incapacity"),
+        "woman_murder": st.checkbox("Femicide", help="Due to gender (TCK 82/f)"),
+        "public_duty_murder": st.checkbox("Victim was a public servant", help="Due to their public duty (TCK 82/g)"),
+        "conceal_crime_murder": st.checkbox("To cover another crime", help="Or avoid detection (TCK 82/h)"),
+        "failure_murder": st.checkbox("Rage after failed crime", help="Inflicted in emotional outburst (TCK 82/i)"),
+        "blood_feud": st.checkbox("Blood feud motive", help="Revenge crimes due to clan conflicts (TCK 82/j)"),
+        "tradition_murder": st.checkbox("Tradition/custom-based motive", help="Honor killing etc. (TCK 82/k)")
+    }
+
     col1, col2 = st.columns(2)
     with col1:
         if st.button("⬅ Back"):
-            st.session_state.step = 1
+            st.session_state.step = 2
             st.rerun()
     with col2:
-        if st.button("Next: Qualifying Cases"):
-            st.session_state.user_data["crime_type"] = crime_type
+        if st.button("Next: Mitigating or Exculpatory Factors"):
+            st.session_state.user_data["qualifying_cases"] = qualifiers
+            st.session_state.step = 4
+            st.rerun()
+
+elif st.session_state.step == 4:
+    st.header("Step 4: Mitigating or Exculpatory Factors")
+    provocation_level = None
+    minor_age_group   = None
+    mental_level      = None
+    deaf_age_group    = None
+
+    self_defense         = st.checkbox("Self Defense")
+    state_necessity      = st.checkbox("State of Necessity")
+    minor_age            = st.checkbox("Minor Age")
+    if minor_age:
+        minor_age_group = st.radio("Minor Age Group", ["Under 12","12-14","15-17"], horizontal=True)
+    mental_illness       = st.checkbox("Mental Illness")
+    if mental_illness:
+        mental_level = st.radio("Mental Illness Level", ["Fully","Partially"])
+    deafness_muteness    = st.checkbox("Deafness or Muteness")
+    if deafness_muteness:
+        deaf_age_group = st.radio("Deafness Age Group", ["Under 15","15-17","18-21"], horizontal=True)
+    unjust_provocation    = st.checkbox("Unjust Provocation")
+    if unjust_provocation:
+        provocation_level = st.radio("Severity of provocation", ["Mild","Moderate","Severe"])
+    error                 = st.checkbox("Error (Mistake of Fact or Law)")
+    under_threat          = st.checkbox("Coercion or Threat")
+    under_drug            = st.checkbox("Temporary Causes / Intoxication")
+    discretionary_mitigation = st.checkbox("Discretionary Mitigation")
+    mitigation_value        = None
+    if discretionary_mitigation:
+        text = st.text_input("Mitigation Amount (fraction, max 1/6)", "0")
+        try:
+            mitigation_value = Fraction(text)
+            if mitigation_value > Fraction(1,6):
+                st.warning("⚠️ En fazla 1/6 girebilirsiniz.")
+            else:
+                st.success(f"✅ Mitigation: {float(mitigation_value):.2%}")
+        except:
+            st.error("❌ Geçersiz kesir formatı.")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("⬅ Back"):
             st.session_state.step = 3
             st.rerun()
+    with col2:
+        if st.button("Next: Judge's Sentence Input"):
+            st.session_state.user_data["mitigating_factors"] = {
+                "self_defense": self_defense,
+                "state_necessity": state_necessity,
+                "minor_age": minor_age,
+                "minor_age_group": minor_age_group,
+                "mental_illness": mental_illness,
+                "mental_level": mental_level,
+                "deafness_muteness": deafness_muteness,
+                "deaf_age_group": deaf_age_group,
+                "unjust_provocation": unjust_provocation,
+                "provocation_level": provocation_level,
+                "error": error,
+                "under_threat": under_threat,
+                "under_drug": under_drug,
+                "discretionary_mitigation": discretionary_mitigation,
+                "discretionary_mitigation_value": float(mitigation_value) if mitigation_value else None
+                }
+        st.session_state.step = 5
+        st.rerun()
+
+# === STEP 5: Judge's Sentence Input ===
+elif st.session_state.step == 5:
+    st.header("Step 5: Judge's Sentence Input")
+    sentence_type = st.selectbox("Select Sentence Type", ["Fixed Term (Years)","Life Imprisonment","Aggravated Life Imprisonment"])
+    if sentence_type == "Fixed Term (Years)":
+        years = st.number_input("Enter duration in years", min_value=1.0, step=0.5)
+        st.session_state.user_data.update({
+            "judge_sentence_type": "Fixed",
+            "judge_sentence_value": years
+        })
+    else:
+        st.session_state.user_data.update({
+            "judge_sentence_type": sentence_type,
+            "judge_sentence_value": None
+        })
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("⬅ Back"):
+            st.session_state.step = 4
+            st.rerun()
+    with col2:
+        if st.button("Next: Analysis"):
+            st.session_state.step = 6
+            st.rerun()
+
+# === STEP 6: Final Sentencing Analysis ===
+elif st.session_state.step == 6:
+    st.header("Step 6: Final Sentencing Analysis")
+    data = st.session_state.user_data
+    # 1) Hakim’in Kararı
+    st.subheader("⚖️ Judge's Proposed Sentence")
+    if data["judge_sentence_type"] == "Fixed":
+        st.write(f"Judge's proposed sentence: **{data['judge_sentence_value']} years**")
+    else:
+        st.write(f"Judge's proposed sentence: **{data['judge_sentence_type']}**")
+
+    # 2) Model Önerisi
+    st.subheader("📊 Suggested Sentence Analysis")
+    suggested = calculate_base_sentence(
+        data["qualifying_cases"],
+        data["mitigating_factors"],
+        data["risk_pred"]
+    )
+    st.write(f"🧮 Suggested final sentence: **{suggested}**")
+
+    # 3) Legal Uyumluluk (TCK 82 örnek: 60–720 ay arasında)
+    st.subheader("📏 Legal Norm Compliance")
+    if data["judge_sentence_type"] == "Fixed":
+        val = data["judge_sentence_value"]
+        if val < 60:
+            st.warning("⚠️ En az 60 ay olmalı.")
+        elif val > 720:
+            st.warning("⚠️ En fazla 720 ay olabilir.")
+        else:
+            st.success("✔️ Yasal sınırlar içinde.")
+    else:
+        st.success("✔️ Yasal sınırlar içinde.")
+
+    # 4) Recidivism Risk Özeti
+    st.subheader("🧠 Recidivism Risk")
+    rp = data["risk_pred"]
+    st.write(f"Predicted risk of reoffending: **{['Low','Medium','High'][rp]}** ({data['risk_proba'][rp]:.0%})")
+
+    # 5) Discretionary Mitigation Recommendation
+    st.subheader("🧾 Discretionary Mitigation Recommendation")
+    if rp == 0:
+        st.success("🟢 Low risk: Discretionary mitigation uygun.")
+    elif rp == 1:
+        st.warning("🟡 Medium risk: Cautious uygulayın.")
+    else:
+        st.error("🔴 High risk: Recommended değil.")
+
+    st.markdown("---")
+    if st.button("🔁 Restart Application"):
+        st.session_state.clear()
+        st.rerun()
