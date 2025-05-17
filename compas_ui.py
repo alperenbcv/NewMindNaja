@@ -92,7 +92,6 @@ with tab3:
 
 with tab1:
     st.title("NAJA: A Norm-Aware Artificial Intelligence Assistant for Judicial Risk Scoring and Sentencing Evaluation")
-    st.header("Recidivism Risk Prediction Tool")
     # --- Utility Fonksiyonlar ---
     def get_confidence_message(p, pred):
         if p >= 0.85:
@@ -305,6 +304,7 @@ with tab1:
 
     # === STEP 1: Recidivism Risk Prediction ===
     if st.session_state.step == 1:
+        st.header("Recidivism Risk Prediction Tool")
         st.markdown("""
             This tool estimates the likelihood of reoffending based on socio-demographic and behavioral data.  
             Please fill out the form and click the **Predict** button.
