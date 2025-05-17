@@ -468,7 +468,7 @@ elif st.session_state.step == 6:
         1: "🟡 Medium Risk: Recidivism possible. Caution in applying mitigation.",
         2: "🔴 High Risk: High chance of reoffending. Avoid discretionary reduction unless exceptional circumstances apply."
     }
-    st.info(risk_desc[rp])
+    st.info(risk_desc)
     if rp == 0:
         st.success("🟢 Low risk: Discretionary mitigation may be applied.")
     elif rp == 1:
