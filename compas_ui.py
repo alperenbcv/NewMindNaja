@@ -4,7 +4,7 @@ import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Recidivism Risk Predictor", layout="wide")
+st.set_page_config(page_title="NAJA", layout="wide")
 
 tab1, tab2, tab3 = st.tabs(["Main", "Legal References", "Model Info"])
 
@@ -91,8 +91,8 @@ with tab3:
     """)
 
 with tab1:
-    st.title("🧠 Recidivism Risk Prediction Tool")
-
+    st.header("NAJA: A Norm-Aware Artificial Intelligence Assistant for Judicial Risk Scoring and Sentencing Evaluation")
+    st.title("Recidivism Risk Prediction Tool")
     # --- Utility Fonksiyonlar ---
     def get_confidence_message(p, pred):
         if p >= 0.85:
