@@ -249,35 +249,35 @@ with tab1:
         messages = []
         if any(exculpatories.values()) and judge_type != "No Imprisonment":
             messages.append(
-                "⚖️ Exculpatory circumstances are present (e.g., self-defense, necessity, or diminished responsibility), "
+                "\n⚖️ Exculpatory circumstances are present (e.g., self-defense, necessity, or diminished responsibility), "
                 "yet a custodial sentence has been assigned. A re-evaluation of the judgment in light of Article 25 et seq. is recommended."
             )
         if any(qualifiers.values()) and judge_type!="Aggravated Life Imprisonment" and not any(mitigations.values()) :
-            messages.append("⚠️ One or more qualifying circumstances exist (e.g., premeditation, public official victim), "
+            messages.append("\n⚠️ One or more qualifying circumstances exist (e.g., premeditation, public official victim), "
             "and no mitigating factors are present. According to TCK Article 82, the appropriate sentence is Aggravated Life Imprisonment."
             )
         if not any(qualifiers.values()) and judge_type=="Aggravated Life Imprisonment" :
             messages.append(
-                "⚠️ No qualifying circumstance has been selected, yet the sentence assigned is Aggravated Life Imprisonment. "
+                "\n⚠️ No qualifying circumstance has been selected, yet the sentence assigned is Aggravated Life Imprisonment. "
                 "Please verify compliance with the statutory aggravation conditions under TCK Article 82."
             )
         if (risk_pred in [1, 2]) and mitigations.get("discretionary_mitigation"):
             messages.append(
-                "⚠️ Discretionary mitigation has been applied despite the individual being assessed as medium or high risk of recidivism. "
+                "\n⚠️ Discretionary mitigation has been applied despite the individual being assessed as medium or high risk of recidivism. "
                 "According to sentencing guidelines, this may not be appropriate and should be reconsidered."
             )
         if risk_pred == 0 and not mitigations.get("discretionary_mitigation") :
             messages.append(
-                "ℹ️ The defendant is assessed as low risk of recidivism. Consider applying discretionary mitigation "
+                "\nℹ️ The defendant is assessed as low risk of recidivism. Consider applying discretionary mitigation "
                 "to reflect positive rehabilitation potential."
             )
         if isinstance(judge_value, (int, float)) and base_sentence in ["Life Imprisonment","Aggravated Life Imprisonment"]:
             messages.append(
-                "⚠️ The model suggests Life/Aggravated Life Imprisonment, yet the judge assigned a fixed-term sentence. "
+                "\n⚠️ The model suggests Life/Aggravated Life Imprisonment, yet the judge assigned a fixed-term sentence. "
                     "This is a potential severity mismatch and should be reviewed."
                 )
         if isinstance(base_sentence,(int, float)) and judge_type != "Fixed":
-            messages.append("⚠️ The model suggests fixed imprisonment, yet the judge assigned Life/Aggravated Life Imprisonment. This is a potential severity mismatch and should be reviewed.")
+            messages.append("\n⚠️ The model suggests fixed imprisonment, yet the judge assigned Life/Aggravated Life Imprisonment. This is a potential severity mismatch and should be reviewed.")
         if isinstance(judge_value, (int, float)) and isinstance(base_sentence, (int, float)):
             if float(judge_value * 2)/3 > float(base_sentence):
                 messages.append(
@@ -286,7 +286,7 @@ with tab1:
                 )
             if float(judge_value * 3)/2 < float(base_sentence):
                 messages.append(
-                    "📉 The judge’s sentence is substantially below the recommended range. "
+                    "\n📉 The judge’s sentence is substantially below the recommended range. "
                     "This may indicate under-sentencing; consider re-evaluating proportionality and deterrent effect."
                 )
 
