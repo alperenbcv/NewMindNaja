@@ -464,11 +464,13 @@ elif st.session_state.step == 6:
     # 5) Discretionary Mitigation Recommendation
     st.subheader("🧾 Discretionary Mitigation Recommendation")
     risk_desc = {
-        0: "🟢 Low Risk: Indicates a low likelihood of reoffending. Consider discretionary mitigation (TCK 62).",
-        1: "🟡 Medium Risk: Recidivism possible. Caution in applying mitigation.",
-        2: "🔴 High Risk: High chance of reoffending. Avoid discretionary reduction unless exceptional circumstances apply."
+        "🟢 Low Risk: Indicates a low likelihood of reoffending. Consider discretionary mitigation (TCK 62).",
+        "🟡 Medium Risk: Recidivism possible. Caution in applying mitigation.",
+        "🔴 High Risk: High chance of reoffending. Avoid discretionary reduction unless exceptional circumstances apply."
     }
-    st.info(risk_desc)
+    st.info(risk_desc[0])
+    st.info(risk_desc[1])
+    st.info(risk_desc[2])
     if rp == 0:
         st.success("🟢 Low risk: Discretionary mitigation may be applied.")
     elif rp == 1:
