@@ -176,7 +176,7 @@ def legal_norm_compliance(base_sentence):
             "⚠️ No qualifying circumstance has been selected, yet the sentence assigned is Aggravated Life Imprisonment. "
             "Please verify compliance with the statutory aggravation conditions under TCK Article 82."
         )
-    if (risk_pred == 1 or risk_pred == 2) and mitigations.get("discretionary_mitigation") :
+    if (risk_pred in [1, 2]) and mitigations.get("discretionary_mitigation"):
         messages.append(
             "⚠️ Discretionary mitigation has been applied despite the individual being assessed as medium or high risk of recidivism. "
             "According to sentencing guidelines, this may not be appropriate and should be reconsidered."
@@ -186,6 +186,11 @@ def legal_norm_compliance(base_sentence):
             "ℹ️ The defendant is assessed as low risk of recidivism. Consider applying discretionary mitigation "
             "to reflect positive rehabilitation potential."
         )
+    if isinstance(judge_value, (int, float)) and base_sentence in ["Life Imprisonment","Aggravated Life Imprisonment"]:
+        messages.append(
+            "⚠️ The model suggests Life/Aggravated Life Imprisonment, yet the judge assigned a fixed-term sentence. "
+                "This is a potential severity mismatch and should be reviewed."
+            )
     if isinstance(judge_value, (int, float)) and isinstance(base_sentence, (int, float)):
         if float(judge_value * 2)/3 > float(base_sentence):
             messages.append(
