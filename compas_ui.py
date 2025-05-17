@@ -276,6 +276,8 @@ with tab1:
                 "⚠️ The model suggests Life/Aggravated Life Imprisonment, yet the judge assigned a fixed-term sentence. "
                     "This is a potential severity mismatch and should be reviewed."
                 )
+        if isinstance(base_sentence,(int, float)) and judge_type != "Fixed":
+            messages.append("⚠️ The model suggests fixed imprisonment, yet the judge assigned Life/Aggravated Life Imprisonment. This is a potential severity mismatch and should be reviewed.")
         if isinstance(judge_value, (int, float)) and isinstance(base_sentence, (int, float)):
             if float(judge_value * 2)/3 > float(base_sentence):
                 messages.append(
