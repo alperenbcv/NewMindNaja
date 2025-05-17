@@ -552,6 +552,8 @@ with tab1:
         st.subheader("🧠 Recidivism Risk")
         rp = data["risk_pred"]
         st.write(f"Predicted risk of reoffending: **{['Low','Medium','High'][rp]}** ({data['risk_proba'][rp]:.0%})")
+        with st.expander("📊 Show Class Probabilities"):
+            plot_probabilities(data["risk_proba"])
 
         # 5) Discretionary Mitigation Recommendation
         st.subheader("🧾 Discretionary Mitigation Recommendation")
