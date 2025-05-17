@@ -304,7 +304,7 @@ with tab1:
 
     # === STEP 1: Recidivism Risk Prediction ===
     if st.session_state.step == 1:
-        st.header("Recidivism Risk Prediction Tool")
+        st.header("Step 1:Recidivism Risk Prediction Tool")
         st.markdown("""
             This tool estimates the likelihood of reoffending based on socio-demographic and behavioral data.  
             Please fill out the form and click the **Predict** button.
