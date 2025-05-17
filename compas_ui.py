@@ -91,8 +91,8 @@ with tab3:
     """)
 
 with tab1:
-    st.header("NAJA: A Norm-Aware Artificial Intelligence Assistant for Judicial Risk Scoring and Sentencing Evaluation")
-    st.title("Recidivism Risk Prediction Tool")
+    st.title("NAJA: A Norm-Aware Artificial Intelligence Assistant for Judicial Risk Scoring and Sentencing Evaluation")
+    st.header("Recidivism Risk Prediction Tool")
     # --- Utility Fonksiyonlar ---
     def get_confidence_message(p, pred):
         if p >= 0.85:
