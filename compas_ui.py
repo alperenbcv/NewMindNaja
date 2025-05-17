@@ -27,7 +27,7 @@ def plot_probabilities(proba):
         ax.text(bar.get_x() + bar.get_width()/2, yval + 0.01, f"{yval:.0%}", ha='center', va='bottom')
     st.pyplot(fig)
 
-def calculate_base_sentence(qualifiers, mitigations, risk_pred):
+def calculate_base_sentence(qualifiers, mitigations, risk_pred, mot_change):
     # Adım 1: Ağırlaştırıcılar varsa doğrudan 'Aggravated Life'
     base_sentence = "Life Imprisonment"
     if any(qualifiers.values()):
@@ -67,10 +67,10 @@ def calculate_base_sentence(qualifiers, mitigations, risk_pred):
         (mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "15-17")):
         if base_sentence == "Aggravated Life Imprisonment":
             base_range = (12,15)
-            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_range)
         elif base_sentence == "Life Imprisonment":
             base_range = (9,11)
-            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_range)
         else :
             base_sentence = base_sentence/2
             if base_sentence > 7 :
@@ -79,10 +79,10 @@ def calculate_base_sentence(qualifiers, mitigations, risk_pred):
           (mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "18-21")):
         if base_sentence == "Aggravated Life Imprisonment":
             base_range = (18,24)
-            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_range)
         elif base_sentence == "Life Imprisonment":
             base_range = (12,15)
-            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_sentence, base_range)
+            base_sentence = risk_pred_mitigation_tuple(risk_pred, base_range)
         else :
             base_sentence = (base_sentence*2)/3
             if base_sentence > 12 :
@@ -94,8 +94,32 @@ def calculate_base_sentence(qualifiers, mitigations, risk_pred):
             base_sentence = 20
         else :
             base_sentence = risk_pred_mitigation_int(risk_pred, base_sentence)
+    #Adım 5: Takdiri indirim
+    if risk_pred == 0 :
+        if base_sentence == "Aggravated Life Imprisonment":
+            base_sentence = "Life Imprisonment"
+        elif base_sentence == "Life Imprisonment":
+            base_sentence = 25
+        else :
+            base_sentence = (base_sentence*5)/6
+    elif risk_pred == 1 and mot_change:
+        if base_sentence != "Aggravated Life Imprisonment" or base_sentence != "Life Imprisonment":
+            base_sentence = (base_sentence*7)/8
+        elif base_sentence == "Aggravated Life Imprisonment":
+            base_sentence = "Life Imprisonment"
+        elif base_sentence == "Life Imprisonment":
+            base_sentence = 25
+    elif risk_pred == 1 and mot_change != True:
+        if base_sentence != "Aggravated Life Imprisonment" or base_sentence != "Life Imprisonment":
+            base_sentence = (base_sentence*11)/12
+    else :
+        base_sentence = base_sentence
 
-    return f"{base_sentence:.0% years}"
+    if isinstance(base_sentence, (int, float)):
+        return f"{base_sentence:.0f} years", base_sentence
+    else:
+        return base_sentence, base_sentence
+
 
 def risk_pred_mitigation_tuple(risk_pred, base_range):
     if risk_pred == 0:
@@ -119,6 +143,62 @@ def risk_pred_mitigation_int(risk_pred,base_sentence):
         base_sentence = base_sentence * 11/12
         return base_sentence
 
+def legal_norm_compliance(base_sentence):
+    risk_pred = data["risk_pred"]
+    qualifiers = data["qualifying_cases"]
+    mitigations = data["mitigating_factors"]
+    judge_type = data["judge_sentence_type"]
+    judge_value = data["judge_sentence_value"]
+
+    # Exculpatory check
+    exculpatories = {
+        "self_defense": mitigations.get("self_defense"),
+        "state_necessity": mitigations.get("state_necessity"),
+        "under_threat": mitigations.get("under_threat"),
+        "under_drug": mitigations.get("under_drug"),
+        "mental_illness_full": mitigations.get("mental_illness") and mitigations.get("mental_level") == "Fully",
+        "minor_age_under12": mitigations.get("minor_age") and mitigations.get("minor_age_group") == "Under 12",
+        "deaf_under15": mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "Under 15"
+    }
+    messages = []
+    if any(exculpatories.values()) and judge_type != "No Imprisonment":
+        messages.append(
+            "⚖️ Exculpatory circumstances are present (e.g., self-defense, necessity, or diminished responsibility), "
+            "yet a custodial sentence has been assigned. A re-evaluation of the judgment in light of Article 25 et seq. is recommended."
+        )
+    if any(qualifiers.values()) and judge_type!="Aggravated Life Imprisonment" and not any(mitigations.values()) :
+        messages.append("⚠️ One or more qualifying circumstances exist (e.g., premeditation, public official victim), "
+        "and no mitigating factors are present. According to TCK Article 82, the appropriate sentence is Aggravated Life Imprisonment."
+        )
+    if not any(qualifiers.values()) and judge_type=="Aggravated Life Imprisonment" :
+        messages.append(
+            "⚠️ No qualifying circumstance has been selected, yet the sentence assigned is Aggravated Life Imprisonment. "
+            "Please verify compliance with the statutory aggravation conditions under TCK Article 82."
+        )
+    if (risk_pred == 1 or risk_pred == 2) and mitigations.get("discretionary_mitigation") :
+        messages.append(
+            "⚠️ Discretionary mitigation has been applied despite the individual being assessed as medium or high risk of recidivism. "
+            "According to sentencing guidelines, this may not be appropriate and should be reconsidered."
+        )
+    if risk_pred == 0 and not mitigations.get("discretionary_mitigation") :
+        messages.append(
+            "ℹ️ The defendant is assessed as low risk of recidivism. Consider applying discretionary mitigation "
+            "to reflect positive rehabilitation potential."
+        )
+    if isinstance(judge_value, (int, float)) and isinstance(base_sentence, (int, float)):
+        if float(judge_value * 2)/3 > float(base_sentence):
+            messages.append(
+                "📈 The sentence imposed by the judge significantly exceeds the model’s recommended sentence range. "
+                "Consider reviewing the justification for this upward deviation."
+            )
+        if float(judge_value * 3)/2 < float(base_sentence):
+            messages.append(
+                "📉 The judge’s sentence is substantially below the recommended range. "
+                "This may indicate under-sentencing; consider re-evaluating proportionality and deterrent effect."
+            )
+
+    return "\n".join(
+        messages) if messages else "✅ The sentence appears to comply with both legal norms and the model’s risk and severity assessment."
 
 # --- Model ve Sabitler ---
 model = joblib.load("recidivism_xgb_pipeline.pkl")
@@ -207,7 +287,8 @@ if st.session_state.step == 1:
         st.session_state.user_data.update({
             "recidivism_input": df_input.to_dict(orient="records")[0],
             "risk_pred": int(pred),
-            "risk_proba": proba.tolist()
+            "risk_proba": proba.tolist(),
+            "motivation_to_change": motivation_to_change
         })
     # Prediction yapılmadan Next butonunu kapatıyoruz
     next_disabled = "risk_pred" not in st.session_state.user_data
@@ -320,8 +401,8 @@ elif st.session_state.step == 4:
                 "discretionary_mitigation": discretionary_mitigation,
                 "discretionary_mitigation_value": float(mitigation_value) if mitigation_value else None
                 }
-        st.session_state.step = 5
-        st.rerun()
+            st.session_state.step = 5
+            st.rerun()
 
 # === STEP 5: Judge's Sentence Input ===
 elif st.session_state.step == 5:
@@ -361,25 +442,18 @@ elif st.session_state.step == 6:
 
     # 2) Model Önerisi
     st.subheader("📊 Suggested Sentence Analysis")
-    suggested = calculate_base_sentence(
+    suggested_string,suggested_value = calculate_base_sentence(
         data["qualifying_cases"],
         data["mitigating_factors"],
-        data["risk_pred"]
+        data["risk_pred"],
+        data["motivation_to_change"]
     )
-    st.write(f"🧮 Suggested final sentence: **{suggested}**")
+    st.write(f"🧮 Suggested final sentence: **{suggested_string}**")
 
-    # 3) Legal Uyumluluk (TCK 82 örnek: 60–720 ay arasında)
+    # 3) Legal Uyumluluk
     st.subheader("📏 Legal Norm Compliance")
-    if data["judge_sentence_type"] == "Fixed":
-        val = data["judge_sentence_value"]
-        if val < 60:
-            st.warning("⚠️ En az 60 ay olmalı.")
-        elif val > 720:
-            st.warning("⚠️ En fazla 720 ay olabilir.")
-        else:
-            st.success("✔️ Yasal sınırlar içinde.")
-    else:
-        st.success("✔️ Yasal sınırlar içinde.")
+    st.write(legal_norm_compliance(suggested_value))
+
 
     # 4) Recidivism Risk Özeti
     st.subheader("🧠 Recidivism Risk")
