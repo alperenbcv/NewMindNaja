@@ -40,7 +40,7 @@ def calculate_base_sentence(qualifiers, mitigations, risk_pred, mot_change):
         mitigations.get("under_threat") or mitigations.get("under_drug") or
         (mitigations.get("mental_illness") and mitigations.get("mental_level") == "Fully")):
         base_sentence = "No Imprisonment"
-        return base_sentence
+        return base_sentence, base_sentence
 
     # Adım 3: Haksız tahrik indirimi
     if mitigations.get("unjust_provocation"):
