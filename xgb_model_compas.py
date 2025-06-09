@@ -11,10 +11,11 @@ from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
 import joblib
 
 # 1) Load data
-df = pd.read_csv("mock_data.csv")
+df = pd.read_csv("mock_data_with_probs.csv")
 
 # 3) Features / target
-X = df.drop(columns="recidivism")
+cols_to_drop = [c for c in ["recidivism", "recidivism_pred", "prediction_probability"] if c in df.columns]
+X = df.drop(columns=cols_to_drop)
 y = df["recidivism"]
 
 # 4) Train/test split
