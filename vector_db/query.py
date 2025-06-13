@@ -9,10 +9,10 @@ retriever = Neo4jVector.from_existing_index(
     url=os.getenv("NEO4J_URI"),
     username=os.getenv("NEO4J_USERNAME"),
     password=os.getenv("NEO4J_PASSWORD"),
-    index_name="kararVector",                      # index adın neyse onu yaz
-    node_label="Karar",                         # kararları bu label ile kaydettiysen
-    embedding_node_property="embedding",           # embedding'leri bu key ile kaydettiysen
-    text_node_property="text"  # arama yapılacak metin alanı
+    index_name="kararVector",
+    node_label="Karar",
+    embedding_node_property="embedding",
+    text_node_property="text"
 )
 
 docs = retriever.similarity_search("tasarlayarak kasten öldürme", k=5)

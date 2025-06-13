@@ -6,8 +6,8 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_neo4j import Neo4jChatMessageHistory
 
 from chatbot.qa_chain import simple_qa
-from chatbot.llm import llm                    # ChatOpenAI instance
-from chatbot.graph import graph                # Neo4jGraph instance
+from chatbot.llm import llm
+from chatbot.graph import graph
 from chatbot.utils import get_session_id
 from chatbot.vector import get_similar_karar_by_embedding
 from chatbot.cypher import cypher_qa
@@ -19,7 +19,11 @@ import matplotlib.pyplot as plt
 
 load_dotenv()
 
-# ─────────────────────── LangChain setup ────────────────────────
+import os, streamlit as st
+key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
+st.warning(f"DEBUG – first 10 chars of key: {repr(key)[:14]}")
+
+
 TOOLS = [
     Tool.from_function(
         name="Similar Decision Search",
@@ -41,11 +45,138 @@ TOOLS = [
 _tool_names = ", ".join(t.name for t in TOOLS)
 _tool_descs = "\n".join(f"{t.name}: {t.description}" for t in TOOLS)
 
-# ⚠️  Prompt *must* match the one you crafted in the back‑end script.
+
 AGENT_PROMPT = PromptTemplate.from_template(
     """
 Sen bir hukuk karar destek sistemisin. Cevapları sadece sana verilen araçlar üzerinden üret.
-… (tam prompt'unuzu buraya yapıştırın) …
+Database üzerinde bir cypher sorgusu oluştururken aşağıdaki node ve relationship'leri kullan.
+model_recidivism_probability: Eğer açıkça oran, yüzde, ihtimal veya model tarafından tahmin edilen tekrar oranı soruluyorsa bu property'e git. 
+ModelRecidivismPrediction: Ayrı bir node’dur, modelin sınıflandırma sonucunu ("0", "1", "2") içerir.
+Suspect ile arasında şu ilişki vardır: (:Suspect)-[:HAS_RECIDIVISM_PREDICTION]->(:ModelRecidivismPrediction)
+Recidivism: Ayrı bir node’dur. Gerçek (etiketli) suç tekrarını içerir. (:Suspect)-[:HAS_RECIDIVISM]->(:Recidivism) ilişkisi vardır. `value` alanı `"0"`, `"1"` veya `"2"` olabilir. Bu bir string'dir.
+Eğer sadece "recidivism değeri" deniyorsa bu, `Recidivism.value` property’sini ifade eder.
+Cevaplarında formatlama karakteri (örneğin ```) kullanma. 
+Cypher sorgularını düz şekilde yaz ve sadece bir kez çalıştır.
+
+Örnek bir karar formatı aşağıdaki gibidir:
+{{"mahkeme": "İstanbul 13. Ağır Ceza Mahkemesi", "dosya_no": "2022/245 E.", "karar_no": "2023/612 K.", "sanik": "Okan S.", "maktul": "Sedat V.", "suç": "kasten öldürme", "madde": "TCK 82/1-a", "nitelikli_hal": ["tasarlayarak"], "ceza": "ağırlaştırılmış müebbet", "hafifletici_sebep": null, "olay_yeri": "Kadıköy/İstanbul – sokak üzeri", "silah_tipi": "tabanca", "eylem_tarzi": "iki hafta keşif yapıp pusu kurarak yakın mesafeden ateş etme", "pişmanlık": false, "savunma": "inkâr", "olay_ozeti_degerlendirme": "Sanık Okan S., maktul Sedat V. ile eski ortaklıkları sırasında yaşanan borç anlaşmazlığı nedeniyle husumet beslemiştir. Olaydan önce iki hafta boyunca maktulün iş çıkış saatlerini takip ederek güzergâh tespit etmiş, 18 Ekim 2022 gecesi dar bir ara sokakta pusuya düşürüp üç el ateş etmiştir. Kameralar, baz istasyonu verileri ve balistik inceleme ile eylem sabittir.", "hukuki_nitelendirme": "Uzun süreli takip, uygun zamanı kollama ve eylemden hemen sonra soğukkanlı kaçış, öldürme kararının önceden verildiğini gösterir. Bu nedenle TCK 82/1-a kapsamında tasarlayarak kasten öldürme suçu oluşmuştur.", "hukum": "Sanığın tasarlayarak kasten öldürme suçunu işlediği sabit görüldüğünden TCK 82/1-a gereği **ağırlaştırılmış müebbet hapis** cezasına hükmolunmuştur. Takdiri indirim uygulanmamıştır."}}
+
+
+GRAPH SCHEMA:
+------
+Node properties:
+---Suspect'in bilgilerini içeren node'lar---
+Suspect {{id: STRING, prior_convictions: INTEGER, juvenile_convictions: INTEGER, model_recidivism_probability: FLOAT, sentence_amount: INTEGER}}
+AgeGroup {{value: STRING}}
+Gender {{value: STRING}}
+Housing {{value: STRING}}
+Race {{value: STRING}}
+Recidivism {{value: STRING}}
+PriorProbationViolation {{name: STRING, active: BOOLEAN}}
+PriorIncarceration {{name: STRING, active: BOOLEAN}}
+SubstanceAbuseHistory {{name: STRING, active: BOOLEAN}}
+MentalHealthIssues {{name: STRING, active: BOOLEAN}}
+GangAffiliation {{name: STRING, active: BOOLEAN}}
+ComplianceHistory {{name: STRING, active: BOOLEAN}}
+MotivationToChange {{name: STRING, active: BOOLEAN}}
+PositiveSocialSupport {{name: STRING, active: BOOLEAN}}
+EducationLevel {{value: STRING}}
+MaritalStatus {{value: STRING}}
+EmploymentStatus {{value: STRING}}
+ModelRecidivismPrediction {{value: STRING}} 
+HasDependents {{name: STRING, active: BOOLEAN}}
+AggressionHistory {{name: STRING, active: BOOLEAN}}
+StableEmployment {{name: STRING, active: BOOLEAN}}
+SentenceType {{value: STRING}}
+IsFixedTerm {{name: STRING, active: BOOLEAN}}
+---Kasten öldürme suçunun nitelikli hallerine ait node'lar---
+IntentionalKilling {{label: STRING}}
+BloodFeud {{name: STRING, active: BOOLEAN}}
+VictimIsRelative {{name: STRING, active: BOOLEAN}}
+VictimIsChild {{name: STRING, active: BOOLEAN}}
+PremeditatedKill {{name: STRING, active: BOOLEAN}}
+MonstrousManner {{name: STRING, active: BOOLEAN}}
+ToCoverAnotherCrime {{name: STRING, active: BOOLEAN}}
+DestructiveManner {{name: STRING, active: BOOLEAN}}
+VictimPublicServant {{name: STRING, active: BOOLEAN}}
+Femicide {{name: STRING, active: BOOLEAN}}
+Tradition {{name: STRING, active: BOOLEAN}}
+FailedCrime {{name: STRING, active: BOOLEAN}}
+---Kasten öldürme suçunu hafifleştirici ya da ortadan kaldıran node'lar---
+UnjustProvocationSevere {{name: STRING, active: BOOLEAN}}
+UnjustProvocationModerate {{name: STRING, active: BOOLEAN}}
+PartialMentalDisorder {{name: STRING, active: BOOLEAN}}
+UnjustProvocationMild {{name: STRING, active: BOOLEAN}}
+DiscretionaryMitigation {{name: STRING, active: BOOLEAN}}
+MitigationAge15_17 {{name: STRING, active: BOOLEAN}}
+MitigationAge12_14 {{name: STRING, active: BOOLEAN}}
+Deaf18_21 {{name: STRING, active: BOOLEAN}}
+Deaf15_17 {{name: STRING, active: BOOLEAN}}
+---Karar Node'unun bağlı olduğu diğer node'lar---
+Karar {{embedding: LIST, text: STRING, dosya_no: STRING, karar_no: STRING, mahkeme: STRING, hukum: STRING, upload_time: STRING}}
+Qualifier {{name: LIST}}
+Madde {{numara: STRING}}
+Sanik {{name: STRING}}
+Maktul {{name: STRING}}
+HafifleticiSebep {{name: LIST}}
+Session {{id: STRING}}
+Message {{content: STRING, role: STRING}}
+
+
+Relationship properties:
+The relationships:
+(:Suspect)-[:HAS_EDUCATION]->(:EducationLevel)
+(:Suspect)-[:HAS_MARITAL_STATUS]->(:MaritalStatus)
+(:Suspect)-[:HAS_GENDER]->(:Gender)
+(:Suspect)-[:HAS_HOUSING]->(:Housing)
+(:Suspect)-[:HAS_RACE]->(:Race)
+(:Suspect)-[:IN_AGE_GROUP]->(:AgeGroup)
+(:Suspect)-[:HAS_DEPENDENTS]->(:HasDependents)
+(:Suspect)-[:HAS_COMPLIANCE_HISTORY]->(:ComplianceHistory)
+(:Suspect)-[:HAS_MOTIVATION_TO_CHANGE]->(:MotivationToChange)
+(:Suspect)-[:HAS_POSITIVE_SOCIAL_SUPPORT]->(:PositiveSocialSupport)
+(:Suspect)-[:HAS_EMPLOYMENT]->(:EmploymentStatus)
+(:Suspect)-[:HAS_RECIDIVISM]->(:Recidivism)
+(:Suspect)-[:HAS_RECIDIVISM_PREDICTION]->(:ModelRecidivismPrediction)
+(:Suspect)-[:HAS_STABLE_EMPLOYMENT]->(:StableEmployment)
+(:Suspect)-[:HAS_SENTENCE_TYPE]->(:SentenceType)
+(:Suspect)-[:COMMITTED]->(:IntentionalKilling)
+(:Suspect)-[:HAS_DISCRETIONARY_MITIGATION]->(:DiscretionaryMitigation)
+(:Suspect)-[:HAS_PREMEDITATED_KILL]->(:PremeditatedKill)
+(:Suspect)-[:HAS_VIOLATED_PROBATION]->(:PriorProbationViolation)
+(:Suspect)-[:VICTIM_WAS_WOMAN]->(:Femicide)
+(:Suspect)-[:HAS_IMPRISONED]->(:PriorIncarceration)
+(:Suspect)-[:ABUSED_SUBSTANCE]->(:SubstanceAbuseHistory)
+(:Suspect)-[:HAS_MENTAL_ISSUES]->(:MentalHealthIssues)
+(:Suspect)-[:HAS_FIXED_TERM]->(:IsFixedTerm)
+(:Suspect)-[:HAS_UNJUST_PROVOCATION_MODERATE]->(:UnjustProvocationModerate)
+(:Suspect)-[:HAS_UNJUST_PROVOCATION_MILD]->(:UnjustProvocationMild)
+(:Suspect)-[:VICTIM_WAS_CHILD]->(:VictimIsChild)
+(:Suspect)-[:HAS_VICTIM_RELATION]->(:VictimIsRelative)
+(:Suspect)-[:HAS_PARTIAL_MENTAL_DISORDER]->(:PartialMentalDisorder)
+(:Suspect)-[:IS_BLOOD_FEUD]->(:BloodFeud)
+(:Suspect)-[:IS_TRADITION_MURDER]->(:Tradition)
+(:Suspect)-[:USED_MONSTROUS_MANNER]->(:MonstrousManner)
+(:Suspect)-[:HAS_AGGRESSION_HISTORY]->(:AggressionHistory)
+(:Suspect)-[:HAS_MOTIVE_COVER_CRIME]->(:ToCoverAnotherCrime)
+(:Suspect)-[:HAS_UNJUST_PROVOCATION_SEVERE]->(:UnjustProvocationSevere)
+(:Suspect)-[:HAS_GANG_AFFILIATION]->(:GangAffiliation)
+(:Suspect)-[:HAS_AGE_12_14]->(:MitigationAge12_14)
+(:Suspect)-[:HAS_AGE_15_17]->(:MitigationAge15_17)
+(:Suspect)-[:USED_DESTRUCTIVE_MANNER]->(:DestructiveManner)
+(:Suspect)-[:VICTIM_WAS_PUBLIC_SERVANT]->(:VictimPublicServant)
+(:Suspect)-[:IS_DEAF_15_17]->(:Deaf15_17)
+(:Suspect)-[:DUE_TO_FAILED_CRIME]->(:FailedCrime)
+(:Suspect)-[:IS_DEAF_18_21]->(:Deaf18_21)
+(:Karar)-[:HAS_QUALIFIER]->(:Qualifier)
+(:Karar)-[:ABOUT_ARTICLE]->(:Madde)
+(:Karar)-[:HAS_DEFENDANT]->(:Sanik)
+(:Karar)-[:HAS_VICTIM]->(:Maktul)
+(:Karar)-[:HAS_MITIGATOR]->(:HafifleticiSebep)
+(:Session)-[:LAST_MESSAGE]->(:Message)
+(:Message)-[:NEXT]->(:Message)
+
+
 TOOLS:
 ------
 {tools}
@@ -57,10 +188,14 @@ Action: the action to take, should be one of [{tool_names}]
 Action Input: the input to the action
 Observation: the result of the action
 ```
+Geçmiş konuşmalardan:
+{chat_history}
+
+Yeni giriş: {input}
+{agent_scratchpad}
     """
 ).partial(tools=_tool_descs, tool_names=_tool_names)
 
-# Agent + Executor
 _agent = create_react_agent(llm, TOOLS, AGENT_PROMPT)
 _agent_executor = AgentExecutor(
     agent=_agent,
@@ -69,7 +204,6 @@ _agent_executor = AgentExecutor(
     handle_parsing_errors=True,
 )
 
-# Runnable wrapper with Neo4j memory
 chat_agent = RunnableWithMessageHistory(
     _agent_executor,
     lambda session_id: Neo4jChatMessageHistory(session_id=session_id, graph=graph),
@@ -79,14 +213,12 @@ chat_agent = RunnableWithMessageHistory(
 
 
 def generate_response(user_text: str, session_id: str, mode: str = "Agent") -> str:
-    """Helper that switches between full agent and bare QA retriever."""
     if mode == "Agent":
         result = chat_agent.invoke(
             {"input": user_text},
             {"configurable": {"session_id": session_id}},
         )
         return result["output"]
-    # mode == "QA"
     return simple_qa(user_text)
 
 # ─────────────────────── Streamlit UI ────────────────────────
@@ -102,34 +234,34 @@ def render_chat_tab():
     """Chatbot UI using st.chat_* components (Streamlit ≥1.32)."""
     st.subheader("💬 Knowledge‑Graph Chatbot")
 
-    # show history
+
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # user input
+
     prompt = st.chat_input("Soru sorun…")
     if prompt:
-        # add user message to state & UI
+
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # choose execution mode (Agent vs QA chain)
+
         mode = st.radio("Yanıt modu", ["Agent", "QA"], horizontal=True, index=0)
 
-        # generate answer
+
         try:
             answer = generate_response(prompt, st.session_state.session_id, mode)
         except Exception as e:
             answer = f"🚨 Hata: {e}"
 
-        # add assistant message to state & UI
+
         st.session_state.messages.append({"role": "assistant", "content": answer})
         with st.chat_message("assistant"):
             st.markdown(answer)
 
-        st.experimental_rerun()  # refresh to show full history
+        st.experimental_rerun()
 
 
 def render_risk_sentencing_workflow():
@@ -140,7 +272,6 @@ def render_risk_sentencing_workflow():
 
 
     st.title("NAJA: A Norm-Aware Artificial Intelligence Assistant for Judicial Risk Scoring and Sentencing Evaluation")
-    # --- Utility Fonksiyonlar ---
     def get_confidence_message(p, pred):
         if p >= 0.85:
             return f"{labels[pred]} (✔️ High Confidence)"
@@ -161,12 +292,12 @@ def render_risk_sentencing_workflow():
         st.pyplot(fig)
 
     def calculate_base_sentence(qualifiers, mitigations, risk_pred, mot_change):
-        # Adım 1: Ağırlaştırıcılar varsa doğrudan 'Aggravated Life'
+
         base_sentence = "Life Imprisonment"
         if any(qualifiers.values()):
             base_sentence = "Aggravated Life Imprisonment"
 
-        # Adım 2: Tam indirim durumları
+
         if (mitigations.get("self_defense") or mitigations.get("state_necessity") or
             (mitigations.get("minor_age") and mitigations.get("minor_age_group") == "Under 12") or
             (mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "Under 15") or
@@ -175,7 +306,6 @@ def render_risk_sentencing_workflow():
             base_sentence = "No Imprisonment"
             return base_sentence, base_sentence
 
-        # Adım 3: Haksız tahrik indirimi
         if mitigations.get("unjust_provocation"):
             ratio_map = {"Mild": Fraction(1,4), "Moderate": Fraction(1,2), "Severe": Fraction(3,4)}
             ratio = ratio_map.get(mitigations.get("provocation_level"), Fraction(0))
@@ -195,7 +325,7 @@ def render_risk_sentencing_workflow():
                     base_sentence = 12
             else :
                 base_sentence = base_sentence*(1-ratio)
-        # Adım 4: Küçük yaş / işitme-engel indirimi aralığı
+
         if ((mitigations.get("minor_age") and mitigations.get("minor_age_group") == "12-14") or
             (mitigations.get("deafness_muteness") and mitigations.get("deaf_age_group") == "15-17")):
             if base_sentence == "Aggravated Life Imprisonment":
@@ -227,7 +357,7 @@ def render_risk_sentencing_workflow():
                 base_sentence = 20
             else :
                 base_sentence = risk_pred_mitigation_int(risk_pred, base_sentence)
-        #Adım 5: Takdiri indirim
+
         if risk_pred == 0 :
             if base_sentence == "Aggravated Life Imprisonment":
                 base_sentence = "Life Imprisonment"
@@ -283,7 +413,7 @@ def render_risk_sentencing_workflow():
         judge_type = data["judge_sentence_type"]
         judge_value = data["judge_sentence_value"]
 
-        # Exculpatory check
+
         exculpatories = {
             "self_defense": mitigations.get("self_defense"),
             "state_necessity": mitigations.get("state_necessity"),

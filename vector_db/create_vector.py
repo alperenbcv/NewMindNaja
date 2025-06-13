@@ -17,9 +17,8 @@ driver = GraphDatabase.driver(
 
 timestamp = datetime.datetime.isoformat()
 
-# --- Ana yükleme fonksiyonu ---
 def upload_karar_with_relations(tx, karar, embedding_vector):
-    # Ana karar metni
+
     text = (
         f"Olay Özeti: {karar.get('olay_ozeti_degerlendirme', '')}\n"
         f"Hukuki Değerlendirme: {karar.get('hukuki_nitelendirme', '')}\n"
@@ -46,7 +45,7 @@ def upload_karar_with_relations(tx, karar, embedding_vector):
         "timestamp": timestamp
     })
 
-    # İlişkisel alanlar ve ilişkileri
+
     if karar.get("nitelikli_hal"):
         tx.run("""
         MERGE (q:Qualifier {name: $name})
@@ -87,7 +86,7 @@ def upload_karar_with_relations(tx, karar, embedding_vector):
         MERGE (k)-[:HAS_VICTIM]->(m)
         """, {"name": karar["maktul"], "dosya_no": karar["dosya_no"]})
 
-# --- Embedding + Upload işlemi ---
+
 with open("decisions.jsonl", "r", encoding="utf-8") as f:
     for line in f:
         if not line.strip():
@@ -98,7 +97,7 @@ with open("decisions.jsonl", "r", encoding="utf-8") as f:
             print(f"Atlanan satır: {e}")
             continue
 
-        # Embedding’i oluştur
+
         combined_text = (
             f"Olay Özeti: {karar.get('olay_ozeti_degerlendirme', '')}\n"
             f"Hukuki Değerlendirme: {karar.get('hukuki_nitelendirme', '')}\n"
@@ -106,7 +105,7 @@ with open("decisions.jsonl", "r", encoding="utf-8") as f:
         )
         embedding_vector = embedding_model.embed_query(combined_text)
 
-        # Neo4j'e yaz
+
         with driver.session(database="neo4j") as session:
             session.execute_write(upload_karar_with_relations, karar, embedding_vector)
 

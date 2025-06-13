@@ -35,7 +35,6 @@ tool_descriptions = "\n".join([f"{tool.name}: {tool.description}" for tool in to
 def get_memory(session_id):
     return Neo4jChatMessageHistory(session_id=session_id, graph=graph)
 
-# Ajan prompt'u
 agent_prompt = PromptTemplate.from_template("""
 Sen bir hukuk karar destek sistemisin. Cevapları sadece sana verilen araçlar üzerinden üret.
 Database üzerinde bir cypher sorgusu oluştururken aşağıdaki node ve relationship'leri kullan.
