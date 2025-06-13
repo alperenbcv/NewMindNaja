@@ -20,7 +20,6 @@ predicted_class = np.argmax(y_proba, axis=1)
 # 5) Yeni sütunları ekle
 df["recidivism_pred"] = predicted_class
 df["prediction_probability"] = predicted_probs.round(2)
-df.insert(0, "id", range(1, len(df) + 1))  # 1'den başlayan id ekle
 
 # 6) Dosyayı güncelle
 df.to_csv("mock_data_with_probs.csv", index=False)
