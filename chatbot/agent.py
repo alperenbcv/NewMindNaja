@@ -1,6 +1,6 @@
-from qa_chain import simple_qa
-from llm import llm
-from graph import graph
+from chatbot.qa_chain import simple_qa
+from chatbot.llm import llm
+from chatbot.graph import graph
 from langchain_core.prompts import PromptTemplate
 from langchain_neo4j import Neo4jChatMessageHistory
 from langchain.agents import AgentExecutor, create_react_agent

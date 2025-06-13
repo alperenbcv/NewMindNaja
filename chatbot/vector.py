@@ -1,5 +1,5 @@
-from llm import embedding_model
-from graph import graph
+from chatbot.llm import embedding_model
+from chatbot.graph import graph
 from langchain_neo4j import Neo4jVector
 
 retriever = Neo4jVector(

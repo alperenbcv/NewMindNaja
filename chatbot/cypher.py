@@ -1,4 +1,4 @@
-from graph import graph
+from chatbot.graph import graph
 
 def cypher_qa(query: str) -> str:
     try:

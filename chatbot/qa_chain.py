@@ -1,5 +1,5 @@
-from vector import retriever  # Zaten var olan Neo4jVector retriever
-from llm import llm
+from chatbot.vector import retriever  # Zaten var olan Neo4jVector retriever
+from chatbot.llm import llm
 from langchain.chains import RetrievalQA
 
 qa_chain = RetrievalQA.from_chain_type(
