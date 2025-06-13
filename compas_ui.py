@@ -63,7 +63,7 @@ Return the result verbatim, do NOT summarise.
  Sorguda şu kalıplardan biri geçiyorsa
   ["12-14 yaş","AgeGroup", "yaş grubunda", "yaş"]
   → **Cypher DB Search** kullan ve yaş grubunu
-     MATCH (s:Suspect)-[:IN_AGE_GROUP]->(ag:AgeGroup {value:"12-14"}) …
+     MATCH (s:Suspect)-[:IN_AGE_GROUP]->(ag:AgeGroup {{value:"12-14"}}) …
      şeklinde sorgula.
 
 Otherwise choose tools as usual.
