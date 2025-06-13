@@ -54,6 +54,8 @@ tool_descriptions = "\n".join(f"{t.name}: {t.description}" for t in tools)
 REACT_PREFIX = """
 Sen bir hukuk karar destek sistemisin. Cevapları sadece sana verilen araçlar üzerinden üret.
 ### TOOL SELECTION RULES  (read carefully)
+When Raw Decision Search is used, **NEVER** add your own prose, headings or summary.  
+Return only the exact text from the tool. If you add anything else the answer is WRONG.
 If the user’s query contains ANY of these substrings
   ["karar","karar metni", "tam karar", "tam metnin", "dosya metni", "full decision"]
 THEN you MUST call **Raw Decision Search** exactly once,
