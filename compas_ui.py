@@ -1,22 +1,4 @@
-"""
-NAJA – Integrated Streamlit application
--------------------------------------
-This single–page Streamlit app merges
-1. The original *step‑by‑step* recidivism‑risk + sentencing workflow
-   (kept intact – see `render_risk_sentencing_workflow()`)
-2. A **graph‑aware legal chatbot** that talks to Neo4j through LangChain.
-
-Replace the placeholder `render_risk_sentencing_workflow()` with the full
-code you already have for the six‑step UI.  Everything else is new and
-ready‑to‑run.
-"""
-
-# ─────────────────────── imports ────────────────────────
-import os
-import streamlit as st
 from dotenv import load_dotenv
-
-# ‑‑ LangChain / LLM / Graph
 from langchain_core.prompts import PromptTemplate
 from langchain.tools import Tool
 from langchain.agents import AgentExecutor, create_react_agent
