@@ -5,6 +5,7 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_neo4j import Neo4jChatMessageHistory
 
+from raw_decision import raw_decision
 from chatbot.qa_chain import simple_qa
 from chatbot.llm import llm
 from chatbot.graph import graph
@@ -24,6 +25,11 @@ load_dotenv()
 
 
 tools = [
+    Tool.from_function(
+        name="Raw Decision Search",
+        description="Tam karar metnini döndürür (özetlemez).",
+        func=raw_decision,
+    ),
     Tool.from_function(
         name="Similar Decision Search",
         description="Verilen olay detaylarına göre Index Search yapar ve DB'den benzer kararları getirir.",
@@ -47,10 +53,11 @@ tool_descriptions = "\n".join(f"{t.name}: {t.description}" for t in tools)
 
 REACT_PREFIX = """
 Sen bir hukuk karar destek sistemisin. Cevapları sadece sana verilen araçlar üzerinden üret.
-Kullanıcı 'karar metni', 'tam karar', 'dosya metni' gibi ifadeler kullanıyorsa mutlaka {{1. **Olayın Özeti**: Sanığın belirli bir süre boyunca maktulü takip ettiği, maktulün günlük rutini gözlemlediği ve suç işlemek için bir plan yaptığı belirtilir. Sanığın olayın gerçekleştiği gün veya saat için özel hazırlık yapması ve suçu dikkat çekmeyecek şekilde işlemesi gibi unsurlar vurgulanır.
-2. **Hukuki Değerlendirme**: Sanığın eylemi önceden tasarlayarak gerçekleştirdiği tespit edilir. Öldürme kastının uzun süre önce oluştuğu, bunun sanığın davranışlarından anlaşıldığı ifade edilir. Bu nedenle eylem, TCK 82/1-a kapsamında "tasarlayarak öldürme" suçu olarak değerlendirilmektedir.
-3. **Hüküm**: Sanığın tasarlayarak kasten öldürme suçunu işlediği sabit görüldüğünden, ağırlaştırılmış müebbet hapis cezası ile cezalandırılmasına karar verilir. Genellikle cezada takdiri indirim uygulanmadığı belirtilir ve sanığın savunmasının delillerle çelişkili olduğu durumlar vurgulanabilir.}}
-yukarıdaki şekilde getir kararı, özetlemeden tam haliyle.
+…
+Kullanıcı ‘karar metni’, ‘tam karar’, ‘dosya metni’ gibi ifadeler
+kullanıyorsa **mutlaka “Raw Decision Search” aracını** kullan ve
+çıktıyı özetleme - doğrudan döndür.
+…
 GRAPH CHEATSHEET (Concise)
 ───────────────────────────────────────────────
 Suspect {{id, prior_convictions, juvenile_convictions,
