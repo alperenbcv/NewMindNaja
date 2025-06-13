@@ -16,3 +16,5 @@ imblearn~=0.0
 imbalanced-learn~=0.13.0
 xgboost~=3.0.0
 langchain-neo4j~=0.4.0
+pyvis~=0.3
+networkx~=3.3

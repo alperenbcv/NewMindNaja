@@ -17,6 +17,8 @@ import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
 
+from graph_helpers import similar_suspects_graph
+
 load_dotenv()
 
 
@@ -227,46 +229,48 @@ def init_session_state():
         st.session_state.messages = []  # list[dict(role,str)]
 
 
-def render_chat_tab():
-    """Chatbot UI using st.chat_* components (Streamlit ≥1.32)."""
-    st.subheader("💬 Knowledge‑Graph Chatbot")
+def render_chat_tab() -> None:
+    st.subheader("💬 Knowledge-Graph Chatbot")
 
-
-    for msg in st.session_state.messages:
+    # 1) Geçmiş mesajları yazdır
+    for msg in st.session_state.get("messages", []):
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-
+    # 2) Kullanıcı girdisi
     prompt = st.chat_input("Soru sorun…")
-    if prompt:
+    if prompt is None:                        # Boşsa erkenden çık
+        return
 
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+    # 3) Kullanıcı mesajını hemen göster
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
+    # 4) Asistan balonu + spinner
+    with st.chat_message("assistant"):
+        placeholder = st.empty()
+        with st.spinner("Yanıt hazırlanıyor…"):
+            mode = st.radio(
+                "Yanıt modu", ["Agent", "QA"],
+                horizontal=True, index=0, key="chat_mode"
+            )
+            try:
+                answer = generate_response(prompt,
+                                            st.session_state.session_id,
+                                            mode)
+            except Exception as e:
+                answer = f"🚨 Hata: {e}"
 
-        mode = st.radio("Yanıt modu", ["Agent", "QA"], horizontal=True, index=0)
+        placeholder.markdown(answer)
 
-
-        try:
-            answer = generate_response(prompt, st.session_state.session_id, mode)
-        except Exception as e:
-            answer = f"🚨 Hata: {e}"
-
-
-        st.session_state.messages.append({"role": "assistant", "content": answer})
-        with st.chat_message("assistant"):
-            st.markdown(answer)
-
-        st.experimental_rerun()
+    # 5) Mesajı oturum hafızasına ekle
+    st.session_state.messages.append(
+        {"role": "assistant", "content": answer}
+    )
 
 
 def render_risk_sentencing_workflow():
-
-    import os
-
-    key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
-    st.warning(f"DEBUG – first 10 chars of key: {repr(key)[:14]}")
 
     st.title("NAJA: A Norm-Aware Artificial Intelligence Assistant for Judicial Risk Scoring and Sentencing Evaluation")
     def get_confidence_message(p, pred):
@@ -722,6 +726,9 @@ def render_risk_sentencing_workflow():
         st.subheader("📏 Legal Norm Compliance")
         st.write(legal_norm_compliance(suggested_value))
 
+        st.subheader("🎯 Similar Suspects Graph")
+        user_query = st.session_state.messages[-1]["content"] if st.session_state.messages else ""
+        similar_suspects_graph(user_query)
 
         # 4) Recidivism Risk Özeti
         st.subheader("🧠 Recidivism Risk")
