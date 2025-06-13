@@ -428,15 +428,15 @@ def render_risk_sentencing_workflow():
         if any(exculpatories.values()) and judge_type != "No Imprisonment":
             messages.append(
                 "\n⚖️ Exculpatory circumstances are present (e.g., self-defense, necessity, or diminished responsibility), "
-                "yet a custodial sentence.py has been assigned. A re-evaluation of the judgment in light of Article 25 et seq. is recommended."
+                "yet a custodial sentence has been assigned. A re-evaluation of the judgment in light of Article 25 et seq. is recommended."
             )
         if any(qualifiers.values()) and judge_type!="Aggravated Life Imprisonment" and not any(mitigations.values()) :
             messages.append("\n⚠️ One or more qualifying circumstances exist (e.g., premeditation, public official victim), "
-            "and no mitigating factors are present. According to TCK Article 82, the appropriate sentence.py is Aggravated Life Imprisonment."
+            "and no mitigating factors are present. According to TCK Article 82, the appropriate sentence is Aggravated Life Imprisonment."
             )
         if not any(qualifiers.values()) and judge_type=="Aggravated Life Imprisonment" :
             messages.append(
-                "\n⚠️ No qualifying circumstance has been selected, yet the sentence.py assigned is Aggravated Life Imprisonment. "
+                "\n⚠️ No qualifying circumstance has been selected, yet the sentence assigned is Aggravated Life Imprisonment. "
                 "Please verify compliance with the statutory aggravation conditions under TCK Article 82."
             )
         if (risk_pred in [1, 2]) and mitigations.get("discretionary_mitigation"):
@@ -451,7 +451,7 @@ def render_risk_sentencing_workflow():
             )
         if isinstance(judge_value, (int, float)) and base_sentence in ["Life Imprisonment","Aggravated Life Imprisonment"]:
             messages.append(
-                "\n⚠️ The model suggests Life/Aggravated Life Imprisonment, yet the judge assigned a fixed-term sentence.py. "
+                "\n⚠️ The model suggests Life/Aggravated Life Imprisonment, yet the judge assigned a fixed-term sentence. "
                     "This is a potential severity mismatch and should be reviewed."
                 )
         if isinstance(base_sentence,(int, float)) and judge_type != "Fixed":
@@ -459,17 +459,17 @@ def render_risk_sentencing_workflow():
         if isinstance(judge_value, (int, float)) and isinstance(base_sentence, (int, float)):
             if float(judge_value * 2)/3 > float(base_sentence):
                 messages.append(
-                    "📈 The sentence.py imposed by the judge significantly exceeds the model’s recommended sentence.py range. "
+                    "📈 The sentence imposed by the judge significantly exceeds the model’s recommended sentence range. "
                     "Consider reviewing the justification for this upward deviation."
                 )
             if float(judge_value * 3)/2 < float(base_sentence):
                 messages.append(
-                    "\n📉 The judge’s sentence.py is substantially below the recommended range. "
+                    "\n📉 The judge’s sentence is substantially below the recommended range. "
                     "This may indicate under-sentencing; consider re-evaluating proportionality and deterrent effect."
                 )
 
         return "\n".join(
-            messages) if messages else "✅ The sentence.py appears to comply with both legal norms and the model’s risk and severity assessment."
+            messages) if messages else "✅ The sentence appears to comply with both legal norms and the model’s risk and severity assessment."
 
     # --- Model ve Sabitler ---
     model = joblib.load("recidivism_xgb_pipeline.pkl")
@@ -708,9 +708,9 @@ def render_risk_sentencing_workflow():
         # 1) Hakim’in Kararı
         st.subheader("⚖️ Judge's Proposed Sentence")
         if data["judge_sentence_type"] == "Fixed":
-            st.write(f"Judge's proposed sentence.py: **{data['judge_sentence_value']} years**")
+            st.write(f"Judge's proposed sentence: **{data['judge_sentence_value']} years**")
         else:
-            st.write(f"Judge's proposed sentence.py: **{data['judge_sentence_type']}**")
+            st.write(f"Judge's proposed sentence: **{data['judge_sentence_type']}**")
 
         # 2) Model Önerisi
         st.subheader("📊 Suggested Sentence Analysis")
@@ -720,7 +720,7 @@ def render_risk_sentencing_workflow():
             data["risk_pred"],
             data["motivation_to_change"]
         )
-        st.write(f"🧮 Suggested final sentence.py: **{suggested_string}**")
+        st.write(f"🧮 Suggested final sentence: **{suggested_string}**")
 
         # 3) Legal Uyumluluk
         st.subheader("📏 Legal Norm Compliance")
