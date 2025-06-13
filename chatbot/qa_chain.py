@@ -1,4 +1,4 @@
-from chatbot.vector import retriever  # Zaten var olan Neo4jVector retriever
+from chatbot.vector import retriever
 from chatbot.llm import llm
 from langchain.chains import RetrievalQA
 
