@@ -1,0 +1,17 @@
+python-dotenv~=1.1.0
+langchain-openai~=0.3.18
+langchain-core~=0.3.63
+langchain~=0.3.25
+utils~=1.0.2
+neo4j~=5.28.1
+openai~=1.82.1
+streamlit~=1.45.0
+pandas~=2.2.3
+joblib~=1.4.2
+matplotlib~=3.10.1
+numpy~=2.2.5
+scipy~=1.15.2
+scikit-learn~=1.6.1
+imblearn~=0.0
+imbalanced-learn~=0.13.0
+xgboost~=3.0.0
