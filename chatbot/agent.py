@@ -73,6 +73,10 @@ Action Input: the input to the action
 Observation: the result of the action Geçmiş konuşmalardan:
 {chat_history}
 
+Yanıtı bitirirken mutlaka şu formatı kullan:
+Thought: I now know the answer
+Final Answer: <kısa cevabın>
+
 Yeni giriş: {input}
 {agent_scratchpad}
 """.strip()
@@ -89,6 +93,8 @@ agent_executor = AgentExecutor(
     tools=tools,
     verbose=True,            # konsolda zincir adımlarını görmenizi sağlar
     handle_parsing_errors=True,
+    max_iterations=4,
+    early_stopping_method="generate"
 )
 
 chat_agent = RunnableWithMessageHistory(
@@ -106,7 +112,7 @@ def generate_response(user_text: str) -> str:
         {"input": user_text},
         {"configurable": {"session_id": session_id}},
     )
-    return result["output"]
+    return result.get("output", str(result))
 
 # ─────────────────────── CLI Döngüsü ────────────────────────────
 if __name__ == "__main__":
