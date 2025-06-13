@@ -53,11 +53,14 @@ tool_descriptions = "\n".join(f"{t.name}: {t.description}" for t in tools)
 
 REACT_PREFIX = """
 Sen bir hukuk karar destek sistemisin. Cevapları sadece sana verilen araçlar üzerinden üret.
-…
-Kullanıcı ‘karar metni’, ‘tam karar’, ‘dosya metni’ gibi ifadeler
-kullanıyorsa **mutlaka “Raw Decision Search” aracını** kullan ve
-çıktıyı özetleme - doğrudan döndür.
-…
+### TOOL SELECTION RULES  (read carefully)
+If the user’s query contains ANY of these substrings
+  ["karar","karar metni", "tam karar", "tam metnin", "dosya metni", "full decision"]
+THEN you MUST call **Raw Decision Search** exactly once,
+with `Action Input = <kullanıcının sorusu (sadece suç veya anahtar sözcük)>`.
+Return the result verbatim, do NOT summarise.
+
+Otherwise choose tools as usual.
 GRAPH CHEATSHEET (Concise)
 ───────────────────────────────────────────────
 Suspect {{id, prior_convictions, juvenile_convictions,
