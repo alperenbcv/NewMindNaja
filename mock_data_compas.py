@@ -103,10 +103,10 @@ def generate_mock_data(seed=42, n_samples=3000):
             "race_ethnicity": rng.choice(["Turk", "Other"], p=[0.75, 0.25]),
             "housing_status": rng.choice(house_keys, p=[0.4, 0.5, 0.1]),
             "has_dependents": rng.choice([True, False]),
-            "prior_probation_violation": rng.choice([True, False]),
+            "prior_probation_violation": rng.choice([True, False], p=[0.25, 0.75]),
             "prior_incarceration": rng.choice([True, False]),
             "substance_abuse_history": rng.choice([True, False]),
-            "mental_health_issues": rng.choice([True, False]),
+            "mental_health_issues": rng.choice([True, False], p=[0.25, 0.75]),
             "gang_affiliation": rng.choice([True, False], p=[0.15, 0.85]),
             "aggression_history": rng.choice([True, False]),
             "compliance_history": rng.choice([True, False]),
@@ -152,6 +152,15 @@ def print_young_high_risk_cases(df):
     f = df[(df["age_group"] == "12-14") & (df["recidivism"] >= 1)]
     print(f"\n🧒 12-14 yaş grubunda orta/yüksek risk alan birey sayısı: {len(f)}")
     print(f.head(10).to_string(index=False))
+
+
+# Sayım
+    oniki_ondort= df[(df["age_group"] == "12-14")]
+    onbes_onyedi= df[(df["age_group"] == "15-17")]
+    deli = df[(df["mental_health_issues"] == True)]
+    print(f"Total 12-14 yaş: {len(oniki_ondort)}")
+    print(f"Total 15-17 yaş: {len(onbes_onyedi)}")
+    print(f"Total deli: {len(deli)}")
 
 # Çalıştır
 if __name__ == "__main__":
