@@ -135,45 +135,55 @@ def init_session_state():
         st.session_state.messages = []  # list[dict(role,str)]
 
 
+# ── render_chat_tab() ─────────────────────────────────────────────
 def render_chat_tab() -> None:
     st.subheader("💬 Knowledge-Graph Chatbot")
 
-    # 1) Geçmiş mesajları yazdır
+    # (1) Kalıcı mod seçici  – balonun DIŞINDA!
+    st.radio(
+        "Yanıt modu",
+        ["Agent", "QA"],
+        horizontal=True,
+        key="chat_mode",              # <- oturumda saklanır
+    )
+
+    # (2) Geçmiş mesajlar
     for msg in st.session_state.get("messages", []):
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # 2) Kullanıcı girdisi
+    # (3) Kullanıcı girdisi
     prompt = st.chat_input("Soru sorun…")
-    if prompt is None:                        # Boşsa erkenden çık
+    if prompt is None:
         return
 
-    # 3) Kullanıcı mesajını hemen göster
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # 4) Asistan balonu + spinner
+    # (4) Asistan cevabı
     with st.chat_message("assistant"):
         placeholder = st.empty()
         with st.spinner("Yanıt hazırlanıyor…"):
-            mode = st.radio(
-                "Yanıt modu", ["Agent", "QA"],
-                horizontal=True, index=0, key="chat_mode"
-            )
             try:
-                answer = generate_response(prompt,
-                                            st.session_state.session_id,
-                                            mode)
+                # seçili moda göre doğru fonksiyonu çağır
+                if st.session_state.chat_mode == "QA":
+                    answer = simple_qa(prompt)                # ← doğrudan QA-Chain
+                else:
+                    answer = generate_response(
+                        prompt,
+                        st.session_state.session_id,
+                        mode="Agent",
+                    )
             except Exception as e:
                 answer = f"🚨 Hata: {e}"
 
         placeholder.markdown(answer)
 
-    # 5) Mesajı oturum hafızasına ekle
     st.session_state.messages.append(
         {"role": "assistant", "content": answer}
     )
+
 
 
 def render_risk_sentencing_workflow():
