@@ -50,17 +50,17 @@ Sen bir hukuk karar destek sistemisin. Cevapları sadece sana verilen araçlar �
 
 GRAPH CHEATSHEET (Concise)
 ───────────────────────────────────────────────
-Suspect {id, prior_convictions, juvenile_convictions,
-         model_recidivism_probability, sentence_amount}
-Recidivism {value}                    # "0","1","2"
-ModelRecidivismPrediction {value}     # "0","1","2"
-Karar {text, dosya_no, karar_no, mahkeme, hukum, embedding}
+Suspect {{id, prior_convictions, juvenile_convictions,
+         model_recidivism_probability, sentence_amount}}
+Recidivism {{value}}                    # "0","1","2"
+ModelRecidivismPrediction {{value}}     # "0","1","2"
+Karar {{text, dosya_no, karar_no, mahkeme, hukum, embedding}}
 
-(Suspect)-[:HAS_RECIDIVISM]->(Recidivism)
-(Suspect)-[:HAS_RECIDIVISM_PREDICTION]->(ModelRecidivismPrediction)
-(Suspect)-[:COMMITTED]->(IntentionalKilling)
-(Suspect)-[:HAS_PREMEDITATED_KILL]->(PremeditatedKill)
-(Suspect)-[:HAS_UNJUST_PROVOCATION_MODERATE]->(UnjustProvocationModerate)
+{{(Suspect)-[:HAS_RECIDIVISM]->(Recidivism)}}
+{{(Suspect)-[:HAS_RECIDIVISM_PREDICTION]->(ModelRecidivismPrediction)}}
+{{(Suspect)-[:COMMITTED]->(IntentionalKilling)}}
+{{(Suspect)-[:HAS_PREMEDITATED_KILL]->(PremeditatedKill)}}
+{{(Suspect)-[:HAS_UNJUST_PROVOCATION_MODERATE]->(UnjustProvocationModerate)}}
 
 TOOLS:
 ------
@@ -68,7 +68,7 @@ TOOLS:
 
 Tool kullanımı:
 Thought: Do I need to use a tool? Yes
-Action: the action to take, should be one of [{{tool_names}}]
+Action: the action to take, should be one of [{{{{tool_names}}}}]
 Action Input: the input to the action
 Observation: the result of the action Geçmiş konuşmalardan:
 {chat_history}
