@@ -1,59 +1,69 @@
-# ---------- graph_helpers.py ----------
 import networkx as nx
 from pyvis.network import Network
 import streamlit.components.v1 as components
-from chatbot.graph import graph           # Neo4jGraph örneğiniz
+from chatbot.graph import graph
 
-def similar_suspects_graph(
-    risk_class: int,        # 0 / 1 / 2
-    prob_pct: float,        # 0.0 – 100.0 arası olasılık (%)
-    k: int = 3,
-    tol_pct: float = 5.0    # ±5 puan tolerans
-) -> None:
-    """
-    Aynı recidivism sınıfında olup olasılığı
-    `prob_pct ± tol_pct` aralığında kalan k sanığı getirir
-    ve grafiği çizer.
-    """
-    low  = max(prob_pct - tol_pct, 0.0)
-    high = min(prob_pct + tol_pct, 100.0)
+# Renk haritası (label → hex)
+LABEL_COLOR = {
+    "Suspect": "#007BFF",
+    "ModelRecidivismPrediction": "#FF7733",
+    "AgeGroup": "#8E44AD",
+    "Gender": "#16A085",
+    "IntentionalKilling": "#C0392B",
+    # ... diğer label’leri ekleyin
+}
 
-    cypher = """
-       MATCH (s:Suspect)
-         WHERE s.model_recidivism_probability >= $low
-           AND s.model_recidivism_probability <= $high
-       MATCH (s)-[:HAS_RECIDIVISM_PREDICTION]->(m:ModelRecidivismPrediction {value:$risk})
-       RETURN s.id   AS id,
-              coalesce(s.name,'Suspect') AS label,
-              s.model_recidivism_probability AS p
-       ORDER BY abs(s.model_recidivism_probability - $prob)
-       LIMIT $k
-       """
+def build_rich_graph(suspect_ids: list[str]):
+    data = graph.query(CYPHER_TEMPLATE, {"suspectIds": suspect_ids})
+    if not data:
+        return None
 
-    params = {
-        "low": low,
-        "high": high,
-        "risk": str(risk_class),
-        "prob": prob_pct,
-        "k": k,
-    }
-    recs = graph.query(cypher, params)
+    G = nx.MultiDiGraph()
+    rec = data[0]  # Tek satır
+    for node in rec["nodes"]:
+        lbl = list(node.labels)[0]
+        G.add_node(
+            node.id,
+            label=lbl if lbl != "Suspect" else node.get("name", "Suspect"),
+            title=f"{lbl}<br/>{node._properties}",
+            color=LABEL_COLOR.get(lbl, "#AAAAAA"),
+            shape="dot" if lbl == "Suspect" else "ellipse",
+        )
+    for rel in rec["rels"]:
+        G.add_edge(
+            rel.start_node.id,
+            rel.end_node.id,
+            label=rel.type,
+            title=rel.type,
+            color="#CCCC66" if rel.type.startswith("HAS") else "#888888",
+        )
+    return G
 
-    if not recs:
-        components.html("<p>Benzer sanık bulunamadı.</p>", height=80)
-        return
+def similar_suspects_graph(risk_class: int, prob_pct: float, k=3, tol_pct=5.0):
+    # --- 1. Benzer sanıkları bul (önceki kod) -----------
+    low, high = max(prob_pct - tol_pct, 0.0), min(prob_pct + tol_pct, 100.0)
+    cy = (
+        "MATCH (s:Suspect)-[:HAS_RECIDIVISM_PREDICTION]->"
+        "(m:ModelRecidivismPrediction {value:$risk}) "
+        "WHERE s.model_recidivism_probability >= $low "
+        "AND   s.model_recidivism_probability <= $high "
+        "RETURN s.id AS id "
+        "ORDER BY abs(s.model_recidivism_probability-$prob) "
+        "LIMIT $k"
+    )
+    rows = graph.query(cy, {"risk": str(risk_class), "low": low,
+                            "high": high, "prob": prob_pct, "k": k})
+    suspect_ids = [r["id"] for r in rows]
+    if not suspect_ids:
+        components.html("<p>Benzer sanık bulunamadı.</p>", height=80); return
 
-    # ----- Graf -----
-    G = nx.Graph()
-    G.add_node("Current", label=f"Current ({prob_pct:.1f}%)", color="#FFCC00")
+    # --- 2. Alt-grafı getir ---
+    G = build_rich_graph(suspect_ids)
+    if G is None:
+        components.html("<p>Graf veri yok.</p>", height=80); return
 
-    for r in recs:
-        lbl = f"{r['label']} ({r['p']:.1f}%)"
-        G.add_node(r["id"], label=lbl, color="#007BFF")
-        G.add_edge("Current", r["id"], title=f"{r['p']:.1f}%")
-
-    net = Network(height="450px", directed=False)
+    # --- 3. Görselleştir ---
+    net = Network(height="550px", directed=False)
     net.from_nx(G)
-    net.repulsion(node_distance=220, spring_length=220)
-
-    components.html(net.generate_html(), height=450, scrolling=False)
+    net.repulsion(node_distance=250, spring_length=250)
+    components.html(net.generate_html(), height=550, scrolling=False)
