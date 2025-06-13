@@ -727,8 +727,10 @@ def render_risk_sentencing_workflow():
         st.write(legal_norm_compliance(suggested_value))
 
         st.subheader("🎯 Similar Suspects Graph")
-        user_query = st.session_state.messages[-1]["content"] if st.session_state.messages else ""
-        similar_suspects_graph(user_query)
+        risk_class = data["risk_pred"]
+        prob_pct = data["risk_proba"][risk_class] * 100.0
+        from graph_helpers import similar_suspects_graph
+        similar_suspects_graph(risk_class, prob_pct, k=3, tol_pct=5.0)
 
         # 4) Recidivism Risk Özeti
         st.subheader("🧠 Recidivism Risk")

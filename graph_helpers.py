@@ -1,37 +1,56 @@
-# ---------- graph_helpers.py (yeni yardımcı modül) ----------
+# ---------- graph_helpers.py ----------
 import networkx as nx
 from pyvis.network import Network
 import streamlit.components.v1 as components
-from chatbot.vector import get_similar_karar_by_embedding  # 3 benzer karar
+from chatbot.graph import graph           # Neo4jGraph örneğiniz
 
-def similar_suspects_graph(question: str, k: int = 3):
-    """Soru cümlesine göre en yakın k karar içindeki sanıkları döndürür
-       ve grafiği çizdirir."""
-    docs_text = get_similar_karar_by_embedding(question)    # string birleşik
-    # Diyelim ki her karar JSON satırı içeriyor -> sanık adlarını ayıklayalım
-    import json, re
-    suspects = []
-    for line in docs_text.splitlines():
-        try:
-            d = json.loads(line)
-            suspects.append(d["sanik"])
-        except Exception:
-            m = re.search(r'"sanik":\s*"?([^",}]+)', line)
-            if m:
-                suspects.append(m.group(1))
-        if len(suspects) >= k:
-            break
+def similar_suspects_graph(
+    risk_class: int,        # 0 / 1 / 2
+    prob_pct: float,        # 0.0 – 100.0 arası olasılık (%)
+    k: int = 3,
+    tol_pct: float = 5.0    # ±5 puan tolerans
+) -> None:
+    """
+    Aynı recidivism sınıfında olup olasılığı
+    `prob_pct ± tol_pct` aralığında kalan k sanığı getirir
+    ve grafiği çizer.
+    """
+    low  = max(prob_pct - tol_pct, 0.0)
+    high = min(prob_pct + tol_pct, 100.0)
 
-    # Oyuncak graf: merkez düğüm = "Query", k adet sanık etrafında
+    cypher = """
+    MATCH (s:Suspect)
+      WHERE s.model_recidivism_probability >= $low
+        AND s.model_recidivism_probability <= $high
+    MATCH (s)-[:HAS_RECIDIVISM_PREDICTION]->(m:ModelRecidivismPrediction {value:$risk})
+    RETURN s.id   AS id,
+           coalesce(s.name,'Suspect') AS label,
+           s.model_recidivism_probability AS p
+    ORDER BY abs(s.model_recidivism_probability - $prob)
+    LIMIT $k
+    """
+    recs = graph.query(
+        cypher,
+        low=low, high=high,
+        risk=str(risk_class),
+        prob=prob_pct, k=k
+    )
+
+    if not recs:
+        components.html("<p>Benzer sanık bulunamadı.</p>", height=80)
+        return
+
+    # ----- Graf -----
     G = nx.Graph()
-    G.add_node("Query", label="Query")
-    for s in suspects:
-        G.add_node(s, label="Suspect")
-        G.add_edge("Query", s)
+    G.add_node("Current", label=f"Current ({prob_pct:.1f}%)", color="#FFCC00")
+
+    for r in recs:
+        lbl = f"{r['label']} ({r['p']:.1f}%)"
+        G.add_node(r["id"], label=lbl, color="#007BFF")
+        G.add_edge("Current", r["id"], title=f"{r['p']:.1f}%")
 
     net = Network(height="450px", directed=False)
     net.from_nx(G)
-    net.repulsion(node_distance=200)
+    net.repulsion(node_distance=220, spring_length=220)
 
-    html = net.generate_html()
-    components.html(html, height=450, scrolling=False)
+    components.html(net.generate_html(), height=450, scrolling=False)
