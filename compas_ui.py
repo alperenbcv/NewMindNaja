@@ -19,9 +19,6 @@ import matplotlib.pyplot as plt
 
 load_dotenv()
 
-import os, streamlit as st
-key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
-st.warning(f"DEBUG – first 10 chars of key: {repr(key)[:14]}")
 
 
 TOOLS = [
@@ -267,9 +264,10 @@ def render_chat_tab():
 def render_risk_sentencing_workflow():
     st.set_page_config(page_title="NAJA", layout="wide")
 
+    import os
 
-
-
+    key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
+    st.warning(f"DEBUG – first 10 chars of key: {repr(key)[:14]}")
 
     st.title("NAJA: A Norm-Aware Artificial Intelligence Assistant for Judicial Risk Scoring and Sentencing Evaluation")
     def get_confidence_message(p, pred):
