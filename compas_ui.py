@@ -262,7 +262,6 @@ def render_chat_tab():
 
 
 def render_risk_sentencing_workflow():
-    st.set_page_config(page_title="NAJA", layout="wide")
 
     import os
 
