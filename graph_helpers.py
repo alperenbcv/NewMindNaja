@@ -19,22 +19,25 @@ def similar_suspects_graph(
     high = min(prob_pct + tol_pct, 100.0)
 
     cypher = """
-    MATCH (s:Suspect)
-      WHERE s.model_recidivism_probability >= $low
-        AND s.model_recidivism_probability <= $high
-    MATCH (s)-[:HAS_RECIDIVISM_PREDICTION]->(m:ModelRecidivismPrediction {value:$risk})
-    RETURN s.id   AS id,
-           coalesce(s.name,'Suspect') AS label,
-           s.model_recidivism_probability AS p
-    ORDER BY abs(s.model_recidivism_probability - $prob)
-    LIMIT $k
-    """
-    recs = graph.query(
-        cypher,
-        low=low, high=high,
-        risk=str(risk_class),
-        prob=prob_pct, k=k
-    )
+       MATCH (s:Suspect)
+         WHERE s.model_recidivism_probability >= $low
+           AND s.model_recidivism_probability <= $high
+       MATCH (s)-[:HAS_RECIDIVISM_PREDICTION]->(m:ModelRecidivismPrediction {value:$risk})
+       RETURN s.id   AS id,
+              coalesce(s.name,'Suspect') AS label,
+              s.model_recidivism_probability AS p
+       ORDER BY abs(s.model_recidivism_probability - $prob)
+       LIMIT $k
+       """
+
+    params = {
+        "low": low,
+        "high": high,
+        "risk": str(risk_class),
+        "prob": prob_pct,
+        "k": k,
+    }
+    recs = graph.query(cypher, params)
 
     if not recs:
         components.html("<p>Benzer sanık bulunamadı.</p>", height=80)
