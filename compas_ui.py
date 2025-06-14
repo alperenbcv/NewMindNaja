@@ -154,9 +154,9 @@ def init_session_state():
 
 # ── render_chat_tab() ─────────────────────────────────────────────
 def render_chat_tab() -> None:
-    st.subheader("💬 Knowledge-Graph Chatbot")
-    st.info("Chatbot üzerinden tam karar metinleri, özet karar metinleri ve database'de kayıtlı sanık profillerini arayabilirsiniz.")
-    st.info("Örnek Query: 1- Recidivism riski 2 olan 2 adet sanık getir.\n 2-Tasarlayarak öldürme suçuna dair tam karar metni getir.\n 3-Çocuğa karşı işlenmiş suça ait özet karar metni getir.\n")
+    st.header("💬 Knowledge-Graph Chatbot")
+    st.subheader("Chatbot üzerinden tam karar metinleri, özet karar metinleri ve database'de kayıtlı sanık profillerini arayabilirsiniz.")
+    st.text("Örnek Query: 1- Recidivism riski 2 olan 2 adet sanık getir.\n 2-Tasarlayarak öldürme suçuna dair tam karar metni getir.\n 3-Çocuğa karşı işlenmiş suça ait özet karar metni getir.\n")
 
     # (1) Kalıcı mod seçici  – balonun DIŞINDA!
     st.radio(
