@@ -11,8 +11,8 @@ vs = Neo4jVector(
     embedding_node_property="embedding"
 )
 
-retriever = vs.as_retriever()
 
-def get_similar_karar_by_embedding(query: str) -> str:
-    docs = retriever.similarity_search(query, k=3)
-    return "\n\n".join([d.page_content for d in docs])
+def get_similar_karar_by_embedding(query: str, k: int = 3) -> str:
+    docs = vs.similarity_search(query, k=k)
+    return "\n\n".join(d.page_content for d in docs)
+
